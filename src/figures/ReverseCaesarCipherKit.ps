@@ -1,0 +1,157 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 0 0 612 792
+%%DocumentMedia Letter 612 792 75 white ( )
+%%Creator: Dylan McNamee, by hand
+%%Title: Caesar Cipher Kit
+%%Pages: 1
+%%PageOrder: Ascend
+%%EndComments
+
+% Caesar Cipher wheel in PostScript.
+% Written by Dylan McNamee for a Cryptol book.
+% Copyright 2016, Creative Commons Attribution Share-alike
+% dylan dot mcnamee at gmail dot com is how to reach me
+
+% This program can create both normal and Reverse-Caesar
+% ciphers. The Reverse has the advantage that it
+% doesn't matter which wheel is plaintext and which
+% is ciphertext - they're symmetric.
+
+% this document is licensed under Creative Commons
+% Attribution-ShareAlike 4.0 license
+% http://creativecommons.org/licenses/by-sa/4.0/
+
+0 setgray
+
+% x y centerMark -
+% draws a plus @x,y
+/centerMark { moveto currentpoint -2 0 rmoveto 4 0 rlineto stroke moveto 0 -2 rmoveto 0 4 rlineto stroke } def
+
+/Alphabet [(A)(B)(C)(D)(E)(F)(G)(H)(I)(J)(K)(L)(M)(N)(O)(P)(Q)(R)(S)(T)(U)(V)(W)(X)(Y)(Z)] def
+/AlphabetLength Alphabet length def
+
+/AlphabetLower [(a)(b)(c)(d)(e)(f)(g)(h)(i)(j)(k)(l)(m)(n)(o)(p)(q)(r)(s)(t)(u)(v)(w)(x)(y)(z)] def
+
+/AlphabetRev [ AlphabetLength 1 sub -1 0
+    { Alphabet exch get } for
+] def
+
+% /AlphabetRev Alphabet def
+
+/Helvetica findfont 24 scalefont setfont
+
+/cshow { dup stringwidth pop 2 div -1 mul 0 rmoveto show } def
+
+% x y r text wheelShow -
+% shows the text centered in a circle of radius r
+/wheelShow { /chars exch def /radius exch def /yCenter exch def /xCenter exch def
+  /count chars length def
+  gsave
+  xCenter yCenter centerMark
+  xCenter yCenter radius add translate
+  chars
+  {
+    0 0 moveto
+    0 radius -1 mul translate
+    cshow
+    -360.0 count div rotate
+    0 radius translate
+  } forall
+  grestore
+} def
+
+% draw the inner wheel
+gsave
+[3 3] 0 setdash
+200 550 124 0 360 arc stroke
+200 550 centerMark
+200 550 100 Alphabet wheelShow
+grestore
+
+% draw the outer wheel
+200 240 130 AlphabetRev wheelShow
+200 240 154 0 360 arc stroke
+
+%% takes <x y height>, sets margins
+/margin-set {
+  /line-height exch def
+  /line-y exch def
+  /line-x exch def
+  line-x line-y moveto
+} bind def
+
+%% carriage return.
+/cr {/line-y line-y line-height sub def
+  line-x line-y moveto} def
+
+%% show/cr
+/scr {show cr} bind def
+
+/rcr {dup stringwidth pop -1 mul 0 rmoveto scr} def
+
+/ccr {dup stringwidth pop 2 div -1 mul 0 rmoveto scr} def
+
+%% (string) stringdims -> dx dy
+/stringdims { false charpath flattenpath pathbbox exch 4 -1 roll sub 3 1 roll exch sub } def
+
+/cshow {2 div -1 mul /height exch def
+    dup stringwidth pop 2 div -1 mul height rmoveto show } def
+
+72 720 moveto
+/Helvetica findfont 42 scalefont setfont
+(Reverse Caesar Cipher kit) show
+/head { /Helvetica findfont 15 scalefont setfont } def
+/body { /Helvetica findfont 10 scalefont setfont } def
+400 670 14 margin-set
+head (Assembly Instructions:) scr
+body () scr
+(1 - print this page, cut out the) scr
+(     upper wheel along dotted lines) scr
+(2 - glue both wheels to cardboard) scr
+(3 - push thumbtack through both) scr
+(     wheels, smaller wheel on top) scr
+() scr
+head (How to encrypt a message:) scr
+body () scr
+(1 - choose an alignment of the wheels) scr
+(2 - write down any pair of inner/outer) scr
+(     letters - this is your key.) scr
+(     Share it with your friend in secret) scr
+(3 - for each letter in your message) scr
+(     find the letter on one wheel,) scr
+(     and write down the letter on) scr
+(     the other wheel) scr
+(4 - this is your encrypted message.) scr
+(     give it to a friend to decrypt) scr
+() scr
+head (How to decrypt a message:) scr
+body () scr
+(1 - you have a key \(shared previously\)) scr
+(     and a secret message.) scr
+(2 - align the wheels so the two letters) scr
+(     in the key are lined up) scr
+(3 - for each letter in the encrypted) scr
+(     message, find the letter on one )scr
+(     wheel, and write down the letter on) scr
+(     the other wheel.) scr
+(4 - congratulations - You've decrypted) scr
+(     a secret message!)scr
+() scr
+head (Things to think about:) scr
+body () scr
+(1 - how are the encrypt and decrypt) scr
+(     processes similar?) scr
+(2 - how are they different?) scr
+(3 - if someone doesn't have the key,) scr
+(     how difficult is decryption?) scr
+(4 - does it matter which wheel you use) scr
+(     for encrypting or decrypting?) scr
+(5 - other than size, are the wheels) scr
+(     different? Why might that be?) scr
+
+62 52 12 margin-set
+/Helvetica findfont 8 scalefont setfont
+(This kit is part of an in-progress book about Cryptography, Programming and Mathematics) scr
+(by Dylan McNamee. It is released under the Creative Commons Attribution-ShareAlike license.) scr
+(Contact <dylan dot mcnamee at gmail dot com> for more information. Version 1.0, September 13, 2016) scr
+showpage
