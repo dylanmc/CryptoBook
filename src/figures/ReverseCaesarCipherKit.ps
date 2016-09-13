@@ -21,6 +21,33 @@
 % Attribution-ShareAlike 4.0 license
 % http://creativecommons.org/licenses/by-sa/4.0/
 
+% first, a little decoration:
+
+% max randRange #0->max
+realtime srand
+/randRange { rand 16#7fffffff div mul cvi } def
+
+% xPos yPos minRadius maxRand stepDegrees doCyberGizmo -
+% draws a cyber-gizmo thing @xPos,yPos
+/doCyberGizmo {
+  /step exch def
+  /radius exch def
+  /minRad exch def /yStart exch def /xStart exch def
+    0 step 360 step sub { /startAng exch def
+        /angDelta step 2 div cvi randRange startAng add 5 add def
+        xStart yStart minRad radius randRange add startAng angDelta arc
+        xStart yStart minRad radius randRange sub angDelta startAng step add arc
+    } for
+    closepath
+} def
+
+0.4 setgray
+200 550 60 0 360 arc closepath fill
+0.6 setgray
+200 550 50 20 30 doCyberGizmo fill
+0.8 setgray
+200 550 35 0 360 arc closepath fill
+
 0 setgray
 
 % x y centerMark -
@@ -36,6 +63,7 @@
     { Alphabet exch get } for
 ] def
 
+% uncomment the line below for a normal Caesar Cipher wheel
 % /AlphabetRev Alphabet def
 
 /Helvetica findfont 24 scalefont setfont
@@ -84,6 +112,10 @@ grestore
 /cr {/line-y line-y line-height sub def
   line-x line-y moveto} def
 
+%% half-line advance
+/hcr {/line-y line-y line-height 2 div sub def
+  line-x line-y moveto} def
+
 %% show/cr
 /scr {show cr} bind def
 
@@ -104,15 +136,15 @@ grestore
 /body { /Helvetica findfont 10 scalefont setfont } def
 400 670 14 margin-set
 head (Assembly Instructions:) scr
-body () scr
+body hcr
 (1 - print this page, cut out the) scr
 (     upper wheel along dotted lines) scr
 (2 - glue both wheels to cardboard) scr
 (3 - push thumbtack through both) scr
 (     wheels, smaller wheel on top) scr
 () scr
-head (How to encrypt a message:) scr
-body () scr
+head (Encrypt a message:) scr
+body hcr
 (1 - choose an alignment of the wheels) scr
 (2 - write down any pair of inner/outer) scr
 (     letters - this is your key.) scr
@@ -124,8 +156,8 @@ body () scr
 (4 - this is your encrypted message.) scr
 (     give it to a friend to decrypt) scr
 () scr
-head (How to decrypt a message:) scr
-body () scr
+head (Decrypt a message:) scr
+body hcr
 (1 - you have a key \(shared previously\)) scr
 (     and a secret message.) scr
 (2 - align the wheels so the two letters) scr
@@ -137,8 +169,8 @@ body () scr
 (4 - congratulations - You've decrypted) scr
 (     a secret message!)scr
 () scr
-head (Things to think about:) scr
-body () scr
+head (Things to ponder:) scr
+body hcr
 (1 - how are the encrypt and decrypt) scr
 (     processes similar?) scr
 (2 - how are they different?) scr
