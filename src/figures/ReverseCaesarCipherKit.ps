@@ -68,7 +68,7 @@ realtime srand
 
 /Helvetica findfont 24 scalefont setfont
 
-/cshow { dup stringwidth pop 2 div -1 mul 0 rmoveto show } def
+/ccshow { dup stringwidth pop -2 div 0 rmoveto show } def
 
 % x y r text wheelShow -
 % shows the text centered in a circle of radius r
@@ -81,7 +81,7 @@ realtime srand
   {
     0 0 moveto
     0 radius -1 mul translate
-    cshow
+    ccshow
     -360.0 count div rotate
     0 radius translate
   } forall
@@ -121,13 +121,13 @@ grestore
 
 /rcr {dup stringwidth pop -1 mul 0 rmoveto scr} def
 
-/ccr {dup stringwidth pop 2 div -1 mul 0 rmoveto scr} def
+/ccr {dup stringwidth pop -2 div 0 rmoveto scr} def
 
 %% (string) stringdims -> dx dy
 /stringdims { false charpath flattenpath pathbbox exch 4 -1 roll sub 3 1 roll exch sub } def
 
-/cshow {2 div -1 mul /height exch def
-    dup stringwidth pop 2 div -1 mul height rmoveto show } def
+/cshow {-2 div /height exch def
+    dup stringwidth pop -2 div height rmoveto show } def
 
 72 720 moveto
 /Helvetica findfont 42 scalefont setfont
