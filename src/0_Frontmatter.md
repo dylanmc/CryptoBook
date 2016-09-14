@@ -1,6 +1,7 @@
 ---
 title: Cryptography, Math and Programming with Cryptol
 subtitle: (and maybe some Python)
+author: Dylan McNamee
 header-includes:
     - \usepackage[paperwidth=396pt,paperheight=612pt,top=36pt,bottom=36pt,includefoot,nohead,twoside]{geometry}
     - \usepackage{fancyhdr}

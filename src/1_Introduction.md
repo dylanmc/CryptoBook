@@ -51,15 +51,15 @@ message they carried.
 
 Follow the instructions on the kit to decode the following punchlines:
 
-I wondered why the ball was getting bigger (Use the key: J<->M)
+I wondered why the ball was getting bigger (Use the key: J$\leftrightarrow$M)
 
 CORI NC ONC JR
 
-What do you call a counterfeit noodle? (Key: F<->O)
+What do you call a counterfeit noodle? (Key: F$\leftrightarrow$O)
 
 TG LHETBAT
 
-A backward poet (Key: H<->H)
+A backward poet (Key: H$\leftrightarrow$H)
 
 SXGVKW GBTKXWK
 
@@ -71,7 +71,8 @@ hour to encrypt a whole page of text, which is way too long.
 Given how tedious it is to decrypt, even when you know the key, it's not too
 hard of a stretch to imagine Caesar thinking this cipher was good enough.
 Now that we have computers, it's a lot easier to encrypt and decrypt
-messages.
+messages, and the Caesar Cipher is not close to good enough. We'll learn
+about how "real world" cryptography works later in this book.
 
 ## Things to ponder
 
