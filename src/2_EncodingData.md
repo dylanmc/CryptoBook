@@ -27,19 +27,19 @@ why that joke isn't leaving out eight kinds of people, read on[^1].
 [^1]: Note that we didn't promise we'd convince you this joke is funny, only
 that you'll understand what it's getting at.
 
-We're so used to seeing a number like 1,023 and understanding it to mean
-"one thousand and twenty three" that we forget that it's
+We're so used to seeing a number like 533 and understanding it to mean
+"five hundred and thirty-three" that we forget that it's
 an encoding of a numeric value into the symbols 0, 1, 2 ... 8, 9. Reading
 from right to left, the n^th^ digit is the $10^{n-1}$-place^[Remember that $10^0 = 1$]. So deconstructing our example number we get:
 
  ----------- ------  ------  ------  ------
     Exponent 10^3^   10^2^   10^1^   10^0^
        Value 1000    100     10      1
-       Digit 1       0       2       3
- Digit value 1000    0       20      3
+       Digit 0       5       2       3
+ Digit value 0       500     30      3
  ----------- ------  ------  ------  ------
 
-So finally we get $1000 + 0 + 20 + 3 =$ 1,023.
+So finally we get $0 + 500 + 30 + 3 =$ 533.
 
 ### Binary representations of numbers
 
@@ -48,17 +48,121 @@ of the exponent instead of 10. Each place (digit) can either have a 1
 or a zero in it. As a result, you need more digits to represent the
 same values, but it works out.
 
-  ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
-  $2^9$ $2^8$ $2^7$ $2^6$ $2^5$ $2^4$ $2^3$ $2^2$ $2^1$ $2^0$
-  512   256   128   64    32    16    8     4     2     1
-  ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+----------- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+   Exponent $2^9$ $2^8$ $2^7$ $2^6$ $2^5$ $2^4$ $2^3$ $2^2$ $2^1$ $2^0$
+      Value 512   256   128   64    32    16    8     4     2     1
+      Digit 1     0     0     0     0     1     0     1     0     1
+Digit value 512   0     0     0     0     16    0     4     0     1
+----------- ----- ----- ----- ----- ----- ----- ----- ----- ----- -----
+
+In this case we get $512 + 16 + 4 + 1$ = 533.
 
 To convert a number into binary, take the largest digit that isn't
 bigger than your value, and set it to 1, then subtract that digit's value
-from your value and repeat down the line. For our number 1,023 that
-proces looks like this:
+from your value and repeat down the line, not forgetting to put in 0's
+for the values you don't want to add.
 
-*TODO:* show the process
+Adding binary numbers is super-easy. It's a lot like
+the addition you're used to, with carrying and everything, except simpler.
+If both places are 0, the sum is 0. If either is 1, the sum is 1.
+If both are 1, the sum is 0, and you carry 1. When you include the carry,
+the rule is the same, except sometimes you have both 1 along with the carry,
+in which case the sum is 1 and the carry is 1.
+
+Here's a four-bit addition of 2 and 3:
+
+~~~
+   1    <- carry
+  0010
++ 0011
+------
+  0101
+~~~
+
+If you're talking about numbers in different bases, and it's not clear
+which one you're refering to, it's common to include the base in the subscript
+after the number. So the joke at the beginning of the chapter would be
+"There are 10~2~ types of people..."^[But that way kind of ruins the joke,
+doesn't it?].
+
+Working from the right, $0+1 = 1$ with no carry, then $1+1 = 0$ with carry,
+and finally we have a carry with $0+0$, so that's 1. 101~2~ is 5, which is what
+we're hoping for.
+
+### Representing negative numbers:
+
+> This section is a deep-dive. You can skip it the first time
+> through - but if you get bored or ever get curious, come back here
+> for some cool stuff.
+
+The encodings we've discussed so far are only for positive numbers.
+If you want to represent negative numbers, there are a few options,
+but one fairly universally agreed-on best way to go.
+
+The obvious (but not best) way is to reserve the top-most bit to represent
+negation. If the bit is 0, the rest of the bits are a positive number,
+if it's 1, the rest of the bits are interpreted as a negative number.
+This encoding makes sense, but it makes arithmetic difficult. For example
+if you had 4-bit signed numbers, and wanted to add -1 and 3, you'd get
+
+~~~
+   11  <- carry
+  1001
++ 0011
+------
+  1100
+~~~
+
+If we apply our naive addition to $-1 + 3$, we get the unfortunate answer
+-4. It turns out that if you represent negative numbers by flipping
+the bits and adding one, you can do arithmetic using simple unsigned
+operations and have the answers work out right.
+
+Here's $-1 + 3$ again, in two's complement:
+
+
+~~~
+  111  <- carry
+  1111
++ 0011
+------
+  0010
+~~~
+
+In the one's place, $1+1=0$ carry 1, then we have $1+1$ + carry = 1 carry 1,
+then we have 1 + carry = 0 with carry, and the last digit is also 1 + carry = 0
+(and the carry goes away). You'll see the answer, $0010$~2~ = 2, which is what
+we're hoping for.
+
+<!---
+### Representing floating-point numbers
+
+*TODO:* do this.
+-->
+
+### Things to think about
+
+ 1. What's the largest value you can represent with one base-ten digit?
+    Two digits?  $n$-digits?
+
+ 2. What's the largest value you can represent with one binary digit?
+    Eight digits? $n$-digits?
+
+ 3. When we did $-1 + 3$, the carry bit got carried off the end of the
+    addition. This is called overflow. In some cases (like this one),
+    it's not a problem, but in other cases, it means that you get the wrong
+    answer. Think about whether you can check whether overflow has occured
+    either before or after the addition has happened.
+
+ 4. Two's complement is a slight change from _one's complement_, in which
+    negative numbers just have their bits flipped, but you don't add a 1
+    afterwards. A big advantage of two's complement is that there are two
+    ways to write 0 in one's complement: 10000... and 0000.... Essentially
+    you have a positive and a negative zero. Think about what problems
+    this might cause.
+
+ 5. What's the largest value you can represent in a two's complement
+    8-bit number? What's the smallest?
 
 ## Encoding text into ones and zeros
 
@@ -66,39 +170,52 @@ Now that you understand how numbers can be represented as ones and zeros,
 we can explain how text can be represented as sequences of numbers, and
 you can convert those numbers into bits.
 
-It turns out that how to assign numbers to letters can be arbitrary.
-Until the early 1960's, there were a number of competing text $\rightarrow$ bits
-encoding systems. People realized early on that deciding on one
-system would let them communicate more easily between different
-machines. The most common text encoding, called ASCII, was agreed on
-in 1963, and was in wide use through the mid 1990's.
+It turns out that how to assign numbers to letters can be arbitrary.  Until the
+early 1960's, there were a number of competing text $\rightarrow$ bits encoding
+systems. People realized early on that deciding on one system would let them
+communicate more easily between different machines. The most common text
+encoding, called ASCII, was agreed on in 1963, and was in wide use through the
+mid 1990's.
 
 Here's how ASCII represents the basic letters, numbers and punctuation:
 
 ~~~
-32  sp 33  ! 34  " 35  # 36  $ 37  % 38  & 39  '
-40  (  41  ) 42  * 43  + 44  , 45  - 46  . 47  /
-48  0  49  1 50  2 51  3 52  4 53  5 54  6 55  7
-56  8  57  9 58  : 59  ; 60  < 61  = 62  > 63  ?
-64  @  65  A 66  B 67  C 68  D 69  E 70  F 71  G
-72  H  73  I 74  J 75  K 76  L 77  M 78  N 79  O
-80  P  81  Q 82  R 83  S 84  T 85  U 86  V 87  W
-88  X  89  Y 90  Z 91  [ 92  \ 93  ] 94  ^ 95  _
-96  `  97  a 98  b 99  c 100 d 101 e 102 f 103 g
-104 h  105 i 106 j 107 k 108 l 109 m 110 n 111 o
-112 p  113 q 114 r 115 s 116 t 117 u 118 v 119 w
-120 x  121 y 122 z 123 { 124 | 125 } 126 ~ 127 del
+sp 32  ! 33  " 34  # 35  $ 36  % 37  & 38  '   39
+(  40  ) 41  * 42  + 43  , 44  - 45  . 46  /   47
+0  48  1 49  2 50  3 51  4 52  5 53  6 54  7   55
+8  56  9 57  : 58  ; 59  < 60  = 61  > 62  ?   63
+@  64  A 65  B 66  C 67  D 68  E 69  F 70  G   71
+H  72  I 73  J 74  K 75  L 76  M 77  N 78  O   79
+P  80  Q 81  R 82  S 83  T 84  U 85  V 86  W   87
+X  88  Y 89  Z 90  [ 91  \ 92  ] 93  ^ 94  _   95
+`  96  a 97  b 98  c 99  d 100 e 101 f 102 g   103
+h  104 i 105 j 106 k 107 l 108 m 109 n 110 o   111
+p  112 q 113 r 114 s 115 t 116 u 117 v 118 w   119
+x  120 y 121 z 122 { 123 | 124 } 125 ~ 126 del 127
 ~~~
 
 So the string "Hi there" in ASCII is: 72, 105, 32, 116, 104, 101, 114, 101.
 
-_TODO_: come up with some exercises to do with ASCII
+#### Some exercises
 
-### Encoding other languages: Unicode[^2]
+ 1. Encode your name in ASCII.
 
-[^2]: This section is a deep-dive: you can do the rest of the book knowing only
-ASCII. On the other hand, if you like to know how things work under the hood,
-you'll enjoy learning how non-Latin web pages are encoded and transmitted.
+ASCII has some clever design features. Here are some questions that
+may uncover some of that cleverness:
+
+ 2. Is there an easy way to convert between upper and lower-case in ASCII?
+    Think about the binary representations.
+
+ 3. Is there an easy way to convert between a digit and its ASCII
+    representation? Does the binary representation help here?
+    What aspects of the ASCII encoding make this easy/difficult?
+
+
+### Encoding _all_ languages: Unicode
+
+> This section is a deep-dive: you can do the rest of the book knowing only
+> ASCII. On the other hand, if you like to know how things work under the hood,
+> you'll enjoy learning how non-Latin web pages are encoded and transmitted.
 
 Up until the mid 1990's, computer systems that needed to process languages
 whose characters are not in the ASCII tables each used their own encodings.
@@ -127,11 +244,13 @@ representation of it. The key to making that work is that while ASCII is an
 
 If you're decoding a UTF-8 stream of bytes, and you encounter any byte with its
 top bit off (i.e., its decimal value is <= 127), decode it as ASCII. If the top
-bit is on (the number is > 128), follow this procedure:
+bit is on (the number is > 127), follow this procedure:
 
  1. The first byte tells you how many bytes are in this character. Count the
     number of bits set before the first "0"-bit. That number is the number
     of bytes in this character.  The remaining bits after the 0 are data.
+    UTF-8 supports up to 4 bytes, so the longest UTF-8 character will start
+    `11110...`
 
  2. The remaining bytes are tagged with a leading "10" (so you can tell
     they aren't beginnings of characters), and the remaining 6-bits are data.
@@ -142,4 +261,8 @@ bit is on (the number is > 128), follow this procedure:
 
 Pretty cool!
 
-_TODO:_ table showing 1, 2, 3- and 4-byte characters
+## Take-aways
+
+You've learned about how to encode data of differentt types (numbers, characters) into
+binary representations. You've learned some binary arithmetic, and why 10~2~ is 2~10~.
+Finally you've learned that nerds (the author included) can have a terrible sense of humor.

@@ -49,9 +49,11 @@ communicate orders to distant generals. The idea is that if the messenger was
 intercepted by foes of Caesar, that they wouldn't learn any secrets from the
 message they carried.
 
+![Example cipher wheel setting - you could call this A$\leftrightarrow$D, Z$\leftrightarrow$E, among other things](figures/AtoD.eps)
+
 Follow the instructions on the kit to decode the following punchlines:
 
-I wondered why the ball was getting bigger (Use the key: J$\leftrightarrow$M)
+I wondered why the ball was getting bigger ... (Use the key: J$\leftrightarrow$M)
 
 CORI NC ONC JR
 
@@ -59,7 +61,7 @@ What do you call a counterfeit noodle? (Key: F$\leftrightarrow$O)
 
 TG LHETBAT
 
-A backward poet (Key: H$\leftrightarrow$H)
+A backward poet ... (Key: H$\leftrightarrow$H)
 
 SXGVKW GBTKXWK
 
@@ -76,7 +78,7 @@ about how "real world" cryptography works later in this book.
 
 ## Things to ponder
 
- 1. if a computer can decrypt a message in 1 millisecond, how long would it take, on average, to decrypt a Caesar Cipher message whose key you don't know?
+ 1. if a computer can decrypt a message in 1 millisecond^[that's 1/1000-th of a second.], how long would it take, on average, to decrypt a Caesar Cipher message whose key you don't know^[Hint: first, how many different possible keys are there? It's safe to guess that on average, you'll have to try half of them before guessing the right one.]?
 
  2. how much more secure would it be to have weird symbols (Greek letters or Egyption heiroglyphics), instead of letters, for the cyphertext in a Caesar's Cipher? Explain your answer.
 
