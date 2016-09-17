@@ -1,0 +1,109 @@
+%!PS-Adobe-3.0 EPSF-3.0
+%%BoundingBox: 10 10 150 150
+%%Creator: Dylan McNamee, by hand
+%%Title: TempConversion
+%%Pages: 1
+%%PageOrder: Ascend
+%%EndComments
+
+% Caesar Cipher wheel in PostScript.
+% Written by Dylan McNamee for a Cryptol book.
+% Copyright 2016, Creative Commons Attribution Share-alike
+% dylan dot mcnamee at gmail dot com is how to reach me
+
+% This program does both normal and Reverse-Caesar
+% ciphers Reverse one has the advantage that it
+% doesn't matter which wheel is plaintext and which
+% is ciphertext - they're symmetric.
+
+% max randRange #0->max
+realtime srand
+/randRange { rand 16#7fffffff div mul cvi } def
+
+/doCyberGizmo {
+  /step exch def
+  /radius exch def
+  /minRad exch def /yStart exch def /xStart exch def
+    0 step 360 step sub { /startAng exch def
+        /angDelta step 2 div cvi randRange startAng add 5 add def
+        xStart yStart minRad radius randRange add startAng angDelta arc
+        xStart yStart minRad radius randRange sub angDelta startAng step add arc
+    } for
+    closepath
+} def
+
+0.4 0.4 scale
+
+0.9 setgray
+% 300 300 150 25 15 doCyberGizmo
+% gsave stroke grestore fill
+200 200 70 0 360 arc fill
+
+%0.8 setgray
+%200 200 100 25 15 doCyberGizmo
+%gsave stroke grestore fill
+
+0.6 setgray
+200 200 50 15 40 doCyberGizmo
+gsave stroke grestore fill
+
+1 setgray
+200 200 25 0 360 arc fill
+
+0 setgray
+
+
+% x y centerMark -
+% draws a plus @x,y
+/centerMark { moveto currentpoint -2 0 rmoveto 4 0 rlineto stroke moveto 0 -2 rmoveto 0 4 rlineto stroke } def
+
+/Alphabet [(A)(B)(C)(D)(E)(F)(G)(H)(I)(J)(K)(L)(M)(N)(O)(P)(Q)(R)(S)(T)(U)(V)(W)(X)(Y)(Z)] def
+/AlphabetLength Alphabet length def
+
+/AlphabetLower [(a)(b)(c)(d)(e)(f)(g)(h)(i)(j)(k)(l)(m)(n)(o)(p)(q)(r)(s)(t)(u)(v)(w)(x)(y)(z)] def
+
+/AlphabetRev [ AlphabetLength 1 sub -1 0
+    { Alphabet exch get } for
+] def
+
+% /AlphabetRev Alphabet def
+
+/Helvetica findfont 24 scalefont setfont
+
+/cshow { dup stringwidth pop 2 div -1 mul 0 rmoveto show } def
+
+% x y r text wheelShow -
+% shows the text centered in a circle of radius r
+/wheelShow { /clicks exch def
+  /chars exch def /radius exch def /yCenter exch def /xCenter exch def
+  /count chars length def
+  /anglePerClick -360.0 count div def
+  gsave
+  xCenter yCenter centerMark
+  xCenter yCenter radius add translate
+  % advance wheel by # clicks
+  0 0 moveto 0 radius -1 mul translate
+  clicks anglePerClick mul rotate
+  0 radius translate
+  chars
+  {
+    0 0 moveto
+    0 radius -1 mul translate
+    cshow
+    anglePerClick rotate
+    0 radius translate
+  } forall
+  grestore
+} def
+
+gsave
+[3 3] 0 setdash
+200 200 124 0 360 arc stroke
+200 200 centerMark
+200 200 100 Alphabet -4 wheelShow
+grestore
+
+200 200 130 AlphabetRev 0 wheelShow
+200 200 154 0 360 arc stroke
+
+showpage
