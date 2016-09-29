@@ -269,6 +269,40 @@ bit is on (the number is > 127), follow this procedure:
 
 Pretty cool!
 
+### An aside: Hexadecimal
+
+Writing numbers in binary is tedious. It takes eight digits to count up to 128,
+after all! Writing them in decimal is convenient for us humans, but a downside
+is that there's no easy way to tell how many bits a number has. Computer
+scientists have settled on _hexadecimal_, or base 16, to write numbers when the
+number of bits matters. How does one write a hexadecimal number? After all,
+we've only got ten digits, 0 -> 9, right? Well, as a convention we use the
+first six letters of the alphabet to represent the digits past 9. So counting
+to 16 in hexadecimal (or "hex" for short), looks like this:
+
+1,  2,  3,  4,  5,  6,  7,  8,  9,  A,   B,   C,   D,   E,   F,   10
+
+Hex, just like decimal and binary, has a _one's place_, but the next bigger
+digit in hex is the _sixteen's place_^[and the next digit is the 256'ths
+place!], so 10 in hex is 16 in decimal (also written as 10~16~ == 16~10~). A in
+hex is 10 in decimal. This means that one hex digit holds exactly four bits,
+and it takes two hex digits to hold a byte. This is important right now,
+because Unicode tables are all written in hex, as you're about to see:
+
+### Back to Unicode
+
+Below is a table with three sample Unicode symbols. Each symbol has a long,
+boring unambiguous name, its graphical symbol (which can vary from font to font), its global numeric code in the master Unicode table, and finally how that number is encoded in UTF-8.
+
+![Some example Unicode glyphs, their official Unicode name, number and UTF-8 encodings](figures/UnicodeFunnyFigure.pdf)
+
+In the table above, the "U+" lets you know that the hex number that follows is
+the location in the Unicode table, and you see that the UTF-8 encoding is also
+written in hex. There's a cool webpage at http://unicode-table.com/en/ that has
+the whole table in one page. On the right of the page there is a live map with
+dots in the parts of the world where the characters visible on the current
+screen are used.
+
 ## Independent study questions
 
 If you're interested into learning more about how information can be
