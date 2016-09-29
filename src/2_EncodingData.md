@@ -35,7 +35,7 @@ from right to left, the n^th^ digit is the $10^{n-1}$-place^[Remember that $10^0
  ----------- ------  ------  ------  ------
     Exponent 10^3^   10^2^   10^1^   10^0^
        Value 1000    100     10      1
-       Digit 0       5       2       3
+       Digit 0       5       3       3
  Digit value 0       500     30      3
  ----------- ------  ------  ------  ------
 
@@ -113,18 +113,25 @@ if you had 4-bit signed numbers, and wanted to add -1 and 3, you'd get
   1100
 ~~~
 
-If we apply our naive addition to $-1 + 3$, we get the unfortunate answer
--4. It turns out that if you represent negative numbers by flipping
-the bits and adding one, you can do arithmetic using simple unsigned
+This shows that if we apply our naive addition to $-1 + 3$, we get the
+unfortunate answer -4. It turns out that if you represent negative numbers by
+flipping the bits and adding one, you can do arithmetic using simple unsigned
 operations and have the answers work out right.
+
+To get a four-bit -1 in two's complement, here's the process:
+
+~~~
+Step 1: 0001   <- +1
+Step 2: 1110   <- flipped
+Step 3: 1111   <- add 1 is -1 in two's complement
+~~~
 
 Here's $-1 + 3$ again, in two's complement:
 
-
 ~~~
   111  <- carry
-  1111
-+ 0011
+  1111 <- -1 (from above)
++ 0011 <- 3
 ------
   0010
 ~~~
@@ -240,7 +247,8 @@ _does_ fit in the ASCII table, the ASCII representation of it is also the UTF-8
 representation of it. The key to making that work is that while ASCII is an
 8-bit representation, the top-most bit of the ASCII table is always 0.
 
-[^3]: UTF-8 was invented at Bell Labs by Ken Thompson, who co-invented Unix, and Rob Pike, who subsequently invented the Go programming language.
+[^3]: UTF-8 was invented at Bell Labs by Ken Thompson, who co-invented Unix,
+and Rob Pike, who subsequently invented the Go programming language.
 
 If you're decoding a UTF-8 stream of bytes, and you encounter any byte with its
 top bit off (i.e., its decimal value is <= 127), decode it as ASCII. If the top
@@ -249,7 +257,7 @@ bit is on (the number is > 127), follow this procedure:
  1. The first byte tells you how many bytes are in this character. Count the
     number of bits set before the first "0"-bit. That number is the number
     of bytes in this character.  The remaining bits after the 0 are data.
-    UTF-8 supports up to 4 bytes, so the longest UTF-8 character will start
+    UTF-8 supports up to 4 bytes, so the longest (4-byte) UTF-8 character will start
     `11110...`
 
  2. The remaining bytes are tagged with a leading "10" (so you can tell
@@ -261,8 +269,52 @@ bit is on (the number is > 127), follow this procedure:
 
 Pretty cool!
 
+## Independent study questions
+
+If you're interested into learning more about how information can be
+digitally encoded, here are some questions you can research the answers
+to.
+
+ 1. Two common ways of **encoding images** are pixel-based (or bitmap)
+    and vector-based:
+
+    a. The main aspects of **pixel-based** encoding are
+       resolution (how many pixels there are in the image), how to encode
+       colors (the value at each pixel), and compression (e.g., to reduce
+       the storage for simple scenes like a plain blue sky). Common
+       pixel-based formats are PNG, JPEG, and GIF.
+
+    b. The main aspects of **vector graphics** are what _primitives_ to provide,
+       which are the shapes that are supported built-in (lines, 
+       curves, circles, rectangles) vs. which ones need to be assembled 
+       from sequences of primitives, what the _coordinate system_ for
+       describing shapes is, and what the _syntax_ is. Vector graphics formats
+       tend to more-resemble programming languages, and are often in human-
+       readable ASCII. Common vector-based formats are PDF, SVG, and PostScript.
+
+    What's an image encoding method you know about? Use Google to find
+    a specification for that format, and Write down how files in
+    that format are structured. Most formats have a _header_ which
+    provides _metatada_ about the file^[The word metadata literally means
+    "data about data", which particularly makes sense in this context].
+
+ 2. **File archives** are encodings that combine a bunch of files and folders
+    into one file that can be sent by email, or downloaded from a
+    website, etc., and then _unpacked_ at the other end.  Archive formats
+    often include the ability to compress the files as well. It's often
+    surprising which file formats are archives. For example, most word
+    processing document formats are file archives, to allow you to include
+    graphics. Installers for most systems are also archives, such as
+    Windows MSI files, MacOS DMG files, and Linux RPM files.  Early
+    archive formats include TAR and ZIP, which were invented more than 30
+    years ago, but are still used every day.
+
+    If you know a particular file archive format, look it up on the Internet
+    and write it up in a page or so.
+
 ## Take-aways
 
-You've learned about how to encode data of differentt types (numbers, characters) into
-binary representations. You've learned some binary arithmetic, and why 10~2~ is 2~10~.
-Finally you've learned that nerds (the author included) can have a terrible sense of humor.
+You've learned about how to encode data of different types (numbers,
+characters) into binary representations. You've learned some binary arithmetic,
+and why 10~2~ is 2~10~.  Finally you've learned that nerds (the author
+included) can have a terrible sense of humor.
