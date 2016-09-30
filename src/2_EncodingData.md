@@ -171,6 +171,26 @@ we're hoping for.
  5. What's the largest value you can represent in a two's complement
     8-bit number? What's the smallest?
 
+## Why ones and zeros?
+
+It's a reasonable question - _why do computers only use ones and zeros_?
+The oversimplified, but essentially correct answer is performance and simplicity.
+Making computers compute faster has been a goal since they were first invented.
+_Simplicity enables speed_
+is a common theme in computer engineering, and binary code is a great example.
+To represent values the voltage on a wire is either _high_ (1) or _low_ (0)^[each part of the computer determines what voltages
+correspond to high and low. As systems get faster, the voltages that make a "1"
+tend to decrease. In current Intel CPUs, for example, it's common for a "1" to be as low as 1 volt. On older systems, it be as high as 13 volts.]
+
+_Transistors_ are the building blocks that work with the voltages inside computers.
+They're essentially just switches that can be controlled by a voltage level.
+A transistor has an input, an output, and a controlling switch.
+It's easy to tell when a transistor is "on" or "off", but measuring
+values in between is much more complex and error-prone, so modern computers
+don't bother with those, and instead just deal with "high" voltages and "low" voltages.
+Taking this approach has allowed us to create computers that can switch
+many _billions of times per second_.
+
 ## Encoding text into ones and zeros
 
 Now that you understand how numbers can be represented as ones and zeros,
