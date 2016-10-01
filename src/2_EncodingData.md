@@ -173,23 +173,24 @@ we're hoping for.
 
 ## Why ones and zeros?
 
-It's a reasonable question - _why do computers only use ones and zeros_?
-The oversimplified, but essentially correct answer is performance and simplicity.
-Making computers compute faster has been a goal since they were first invented.
-_Simplicity enables speed_
-is a common theme in computer engineering, and binary code is a great example.
-To represent values the voltage on a wire is either _high_ (1) or _low_ (0)^[each part of the computer determines what voltages
-correspond to high and low. As systems get faster, the voltages that make a "1"
-tend to decrease. In current Intel CPUs, for example, it's common for a "1" to be as low as 1 volt. On older systems, it be as high as 13 volts.]
+It's a reasonable question - _why do computers only use ones and zeros_?  The
+oversimplified, but essentially correct answer is performance and simplicity.
+Making computers faster has been a goal since they were first invented.
+_Simplicity enables speed_ is a common theme in computer engineering, and
+binary code is a great example.  To represent values the voltage on a wire is
+either _high_ (representing a 1) or _low_ (representing 0). What exact voltage
+corresponds to high and low can vary. As systems get faster, the voltages that
+make a "1" tend to decrease. In current Intel CPUs, for example, it's common
+for a "1" to be as low as 1 volt. On older systems, it be as high as 13 volts.
 
-_Transistors_ are the building blocks that work with the voltages inside computers.
-They're essentially just switches that can be controlled by a voltage level.
-A transistor has an input, an output, and a controlling switch.
-It's easy to tell when a transistor is "on" or "off", but measuring
+_Transistors_ are the building blocks that work with the voltages inside
+computers.  They're essentially just switches that can be controlled by a
+voltage level.  A transistor has an input, an output, and a controlling switch.
+It's easy to tell when a transistor is all the way "on" or "off", but measuring
 values in between is much more complex and error-prone, so modern computers
-don't bother with those, and instead just deal with "high" voltages and "low" voltages.
-Taking this approach has allowed us to create computers that can switch
-many _billions of times per second_.
+don't bother with those, and instead just deal with "high" voltages and "low"
+voltages.  Taking this approach has allowed us to create computers that can
+switch many _billions of times per second_.
 
 ## Encoding text into ones and zeros
 
@@ -291,7 +292,8 @@ Pretty cool!
 
 ### An aside: Hexadecimal
 
-Writing numbers in binary is tedious. It takes eight digits to count up to 128,
+Writing numbers in binary is tedious for mere humans^[computers, on the other
+hand, seem to thrive on tedium.]. It takes eight digits to count up to 128,
 after all! Writing them in decimal is convenient for us humans, but a downside
 is that there's no easy way to tell how many bits a number has. Computer
 scientists have settled on _hexadecimal_, or base 16, to write numbers when the
