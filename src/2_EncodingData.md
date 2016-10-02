@@ -15,7 +15,7 @@ another set of things (sequences of ones and zeros) is called _encoding_.
 _Decoding_ is reversing the process; getting back the original information from
 the new representation. In this chapter, we'll learn how to encode and decode
 unsigned and signed integers, simple Latin alphabets, as well as the rest of
-the alphabets in the world
+the alphabets in the world.
 
 ## Encoding integers
 
@@ -114,11 +114,14 @@ if you had 4-bit signed numbers, and wanted to add -1 and 3, you'd get
 ~~~
 
 This shows that if we apply our naive addition to $-1 + 3$, we get the
-unfortunate answer -4. It turns out that if you represent negative numbers by
+unfortunate answer -4. Wouldn't it be cool if there were a way to store
+negative numbers in a way that the addition process we already know
+would just work out? It turns out that if you represent negative numbers by
 flipping the bits and adding one, you can do arithmetic using simple unsigned
-operations and have the answers work out right.
+operations and have the answers work out right. This method of encoding
+signed numbers is called _two's complement_.
 
-To get a four-bit -1 in two's complement, here's the process:
+For example, to get a four-bit -1 in two's complement, here's the process:
 
 ~~~
 Step 1: 0001   <- +1
