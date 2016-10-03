@@ -201,16 +201,19 @@ Now that you understand how numbers can be represented as ones and zeros,
 we can explain how text can be represented as sequences of numbers, and
 you can convert those numbers into bits.
 
-It turns out that how to assign numbers to letters can be arbitrary.  Until the
-early 1960's, there were a number of competing text $\rightarrow$ bits encoding
-systems. People realized early on that deciding on one system would let them
-communicate more easily between different machines. The most common text
-encoding, called ASCII, was agreed on in 1963, and was in wide use through the
-mid 1990's.
+It turns out that how to assign numbers to letters is pretty arbitrary.  Until
+the early 1960's, there were a number of competing text $\rightarrow$ bits
+encoding systems. People realized early on that deciding on one system would
+let them communicate more easily between different machines. The most common
+text encoding, called ASCII, was agreed on in 1963, and was in wide use through
+the mid 1990's.
 
-Here's how ASCII represents the basic letters, numbers and punctuation:
+The table below show how ASCII represents the basic letters, numbers and
+punctuation. Each character is followed by its decimal ASCII code. There are
+two "special" charaters in the table, `sp` is the space character, and `del` is
+delete^[delete is more of an un-character, but it has an ASCII code].
 
-~~~
+```
 sp 32  ! 33  " 34  # 35  $ 36  % 37  & 38  '   39
 (  40  ) 41  * 42  + 43  , 44  - 45  . 46  /   47
 0  48  1 49  2 50  3 51  4 52  5 53  6 54  7   55
@@ -223,7 +226,7 @@ X  88  Y 89  Z 90  [ 91  \ 92  ] 93  ^ 94  _   95
 h  104 i 105 j 106 k 107 l 108 m 109 n 110 o   111
 p  112 q 113 r 114 s 115 t 116 u 117 v 118 w   119
 x  120 y 121 z 122 { 123 | 124 } 125 ~ 126 del 127
-~~~
+```
 
 So the string "Hi there" in ASCII is: 72, 105, 32, 116, 104, 101, 114, 101.
 
@@ -298,7 +301,7 @@ Pretty cool!
 Writing numbers in binary is tedious for mere humans^[computers, on the other
 hand, seem to thrive on tedium.]. It takes eight digits to count up to 128,
 after all! Writing them in decimal is convenient for us humans, but a downside
-is that there's no easy way to tell how many bits a number has. Computer
+is that there's no easy way to tell how many bits a decimal number has. Computer
 scientists have settled on _hexadecimal_, or base 16, to write numbers when the
 number of bits matters. How does one write a hexadecimal number? After all,
 we've only got ten digits, 0 -> 9, right? Well, as a convention we use the
@@ -311,8 +314,16 @@ Hex, just like decimal and binary, has a _one's place_, but the next bigger
 digit in hex is the _sixteen's place_^[and the next digit is the 256'ths
 place!], so 10 in hex is 16 in decimal (also written as 10~16~ == 16~10~). A in
 hex is 10 in decimal. This means that one hex digit holds exactly four bits,
-and it takes two hex digits to hold a byte. This is important right now,
-because Unicode tables are all written in hex, as you're about to see:
+and it takes two hex digits to hold a byte. 
+
+Finally, there are a number of ways of indicating what base a nuber is in.  In
+addition to using the subscript of the base, like spoiling the joke with 10~2~,
+when you are writing numbers in ASCII and there's no way to write subscripts,
+instead we prefix binary numbers with `0b`, and prefix hexadecimal numbers with
+`0x`. If a number has no prefix or subscript, it's usually^[when not telling
+nerdy jokes] safe to assume the number is in base 10. Learning what hexadecimal
+looks like is important right now, because Unicode tables are all written in
+hex, as you're about to see.
 
 ### Back to Unicode
 
@@ -323,10 +334,31 @@ boring unambiguous name, its graphical symbol (which can vary from font to font)
 
 In the table above, the "U+" lets you know that the hex number that follows is
 the location in the Unicode table, and you see that the UTF-8 encoding is also
-written in hex. There's a cool webpage at http://unicode-table.com/en/ that has
+written in hex. There's a cool webpage at [`http://unicode-table.com/en/`](http://unicode-table.com/en/) that has
 the whole table in one page. On the right of the page there is a live map with
 dots in the parts of the world where the characters visible on the current
 screen are used.
+
+Let's look at the UTF-8 for the Bicycle symbol: `F0 9F 9A B2`. In binary the F0
+is 11110000. The four 1's let us know that this UTF-8 code has four bytes total (this one and the next 3). The remaining 3 bytes are:
+```
+9   F    9   A    B   2
+10011111 10011010 10110010
+```
+Remember that the beginning `10` in each byte lets us know these are the 
+rest of this one symbol. If we take those off and concatenate the bits
+like this:
+```
+011111011010110010
+```
+Then breaking that up into 4-bit hunks (starting from the right), then
+converting each chunk into its Hex digit, we get:
+```
+Binary chunk:   01 1111 0110 1011 0010
+Hex digit:       1 F    6    B    2
+```
+If you look at the Unicode Numeric code part of the table above, you'll
+see that 0x1F6B2 is the code for Bicycle!
 
 ## Independent study questions
 

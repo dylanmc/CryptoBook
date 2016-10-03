@@ -1,7 +1,7 @@
 # Goals of this book
 
-Shooting for high-school-ish aged students, who want to learn about cryptography,
-and willing to learn about math and programming along the way.
+Shooting for high-school-ish aged students who want to learn about cryptography,
+and are willing to learn about math and programming along the way.
 
 ## Beginnings of an Outline
 
@@ -10,6 +10,10 @@ and willing to learn about math and programming along the way.
     * encrypting punchlines with Reverse-Caesar codewheels
  * Encoding information - Binary, ASCII, UTF-8, Morse code, Huffman encoding
     * each chapter begins with "what you'll get out of this chapter", which can also be "if you know all this, you can skim this chapter"
+ * Introduction to Cryptol
+    * data types
+    * sequences, comprehensions
+    * functions
  * Classic encryption algorithms
     * using shared secret keys to communicate in code
     * additive ciphers - revisiting Caesar [modulo arithmetic]
