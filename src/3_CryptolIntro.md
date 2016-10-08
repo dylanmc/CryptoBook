@@ -21,9 +21,9 @@ is running MacOS, Windows or Linux. Instructions for all three are
 provided on the Cryptol website, which is `http://cryptol.org`
 
 You're ready to go with the rest of the chapter (and book) if you can run
-Cryptol, and follow along with the session below. In the examples below, **what
-you type will be in bold**, and `what the computer types will be in non-bold
-typewriter font (like this)`.
+Cryptol, and follow along with the session below. In the examples below, **`what
+you type will be in bold`**, and `what the computer types will be in non-bold
+(like this)`.
 
 _start cryptol, however you're supposed to on your system_
 ```
@@ -70,20 +70,20 @@ You can ask Cryptol what the type of something is with the `:t` command, like th
 Here we've said "Hey, Cryptol: what's the type of Hex AB?" and Cryptol replied (in a friendly robotic voice "Hex AB has the type _a sequence of length 8 of bits_".
 
 What do you think the type of a string of text should be? For example,
-what should the type of "hello cryptol" be? Assume the text is ASCII, not UTF-8.
+what should the type of `"hello cryptol"` be? Assume the text is ASCII, not UTF-8.
 Stop reading for a minute and think about it.
 
-Really, don't just read ahead, think about the type of the string "hello cryptol".
+Really, don't just read ahead, think about the type of the string `"hello cryptol"`.
 
 Okay, did you think about it? What did you come up with? One way to
 start answering questions like this one is outside in. By that I mean
 start by counting how many elements there are. In this case the length
-of "hello cryptol" is 13 characters. So, the start of the Cryptol type
+of `"hello cryptol"` is 13 characters. So, the start of the Cryptol type
 would be `[13]`. Next, think about the type of each character.
 Remember that ASCII characters are 8-bits each, so the rest of the
 type is [8]. To check your answer you can just ask Cryptol:
 
-`Cryptol> ` **:t "hello cryptol"**  
+`Cryptol> ` **`:t "hello cryptol"`**  
 `"hello cryptol" : [13][8]`
 
 ### Enumerations: sequence shortcuts
@@ -147,7 +147,18 @@ each, and the result doesn't wrap around.
 
 In math, _functions_ describe a way of creating an _output_ from one or more
 _inputs_. Functions in Cryptol are the same thing, and you can give them
-names if you want.
+names if you want. Here's a picture example of a functioned named $f$,
+which takes two variables, $x$ and $y$ and returns their sum:
+
+```
+Inputs            Function                  Output
+                _________________
+7 ---------> x |                 |
+               | f(x,y) = x + y  |---------> 12
+5 ---------> y |_________________|
+
+(TODO: make this pretty)
+```
 
 One way to define a function is with the `let` command, like this:
 
@@ -164,7 +175,21 @@ work with more bits is to use hex and add a leading 0:
 `Cryptol> ` **`double 0x04`**  
 `0x08`
 
-Whew. That's better. You can also call functions inside a sequence
+Whew. That's better. Here's a definition of our function $f$, which
+takes two inputs:
+
+`Cryptol> ` **`let f x y = x + y`**  
+`Cryptol> ` **`f 0x07 0x05`**  
+`0x0c`  
+
+If you're tired of reading hex, you can ask Cryptol to speak back to
+you in decimal:
+
+`Cryptol> ` **`:set base=10           `** $\leftarrow$ _use base 10 output_  
+`Cryptol> ` **`f 0x07 0x05`**  
+`12`
+
+You can also call functions inside a sequence
 comprehension, like this:
 
 `Cryptol> ` **`[ double x | x <- [ 0 .. 10 ]]`**  
@@ -176,7 +201,160 @@ inside functions:
 
 `Cryptol> ` **`let quadruple x = double (double x)`**  
 `Cryptol> ` **`quadruple 0x04`**  
-`0x10`  
+`16            `  $\leftarrow$ _we still have output set to base 10_
+
+
+## Functions on sequences
+
+Now that you know about functions and sequences, it's time to learn
+about some functions that operate on sequences. 
+
+### Extracting elements from sequences
+
+The first one is
+called the _index operator_. That's a fancy way of saying getting
+the _n^th^_ element out of a sequence. It works like this:
+
+_1:_ ` Cryptol> ` **`let alphabet=['a' .. 'z']`**  
+_2:_ ` Cryptol> ` **`alphabet @ 5`**  
+_3:_ ` 102`  
+_4:_ ` Cryptol> ` **`:set ascii=on`**  
+_5:_ ` Cryptol> ` **`alphabet @ 5`**  
+_6:_ ` 'f'`
+
+On line 1, we created a variable called _alphabet_, which is a
+sequence of 8-bit integers that are the ASCII values of the letters of
+the alphabet. On line 2 we used the _index operator_, which is the `@`
+symbol, to extract the element at location 5 of that sequence, which
+is 102.  Since wanted to see it as a character, on line 4 we used
+`:set ascii=on`, which tells Cryptol to print 8-bit numbers as
+characters. Finally, on line 5 we re-did the `@` operation, which gave
+us `f`, which is the 6^th^ letter of the alphabet. Why the 6th
+character and not the 5th? Cryptol, like most programming languages,
+uses _zero-indexing_, which means that `alphabet @ 0` is the first
+element of the sequence, `alphabet @ 1` is the second element and so
+on.
+
+Cryptol also provides a _reverse index operator_, which counts
+backwards from the end of the sequence, like this:
+
+`Cryptol> ` **`alphabet!25`**  
+`'a'`  
+`Cryptol> ` **`alphabet!0`**  
+`'z'`  
+
+What happens if you try to go off the end (or past the beginning) of a
+sequence?  Let's try:
+
+`Cryptol> ` **`alphabet@26`**  
+`invalid sequence index: 26`
+
+One more thing: `@` and `!` act a lot like functions, but they're called
+_infix operators_. The only difference between a function and an operator is
+that when you call a function, its name comes first followed by the
+values you want the function to operate on (we call those its
+_arguments_). Operators only work with 2-arguments, and the operator
+name comes _between_ the two arguments. All of the normal math operators you're
+familiar with are infix operators, like: $5 + 2 - 3$.
+
+### Reversing a sequence
+
+Cryptol provides a function called `reverse`. Let's try it:
+
+`Cryptol> ` **`reverse ['a' .. 'z']`**  
+`"zyxwvutsrqponmlkjihgfedcba"`
+
+Pretty handy!
+
+### Concatenating sequences
+
+The `#` operator combines two sequences into one sequence, like this:
+
+`Cryptol> ` **`['a' .. 'z'] # ['A' .. 'Z']`**  
+`"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"`
+
+### "Rotating" elements of a sequence
+
+The `>>>` and `<<<` operators _rotate_ the elements of a sequence $n$
+places. For example,
+
+`['a' .. 'z'] >>> 1 ` returns `"zabcdefghijklmnopqrstuvwxy"`. All of
+the elements get shifted 1 place to the right, but the ones that fall
+off the end _rotate_ back to the beginning.
+
+`['a' .. 'z'] <<< 2 ` returns `"cdefghijklmnopqrstuvwxyzab"`.
+Everything moves to the left two places, but the first two, which fall
+off the front, rotate around to the end.
+
+### Functions have types, too
+
+> _This section is a deep-dive into Cryptol's fancy type system.
+> You don't need to know this to complete the first few exercises,
+> but it's really neat, and will help you understand some of the
+> things Cryptol says to you._
+
+We mentioned earlier in this chapter that Cryptol is very
+careful about the types of things. In addition to data, functions
+in Cryptol have a type. The type tells you how many arguments
+a function takes as input, and what type each of those arguments
+needs to have, as well as the type of the output. Just like for
+data, you can ask Cryptol what the type of a function is by using
+`:t`, like this:
+
+`Cryptol> ` **`:t double`**  
+`double : {a} (Arith a) => a -> a`
+
+The way you read a function-type in Cryptol has two parts,
+which are separated by a "fat arrow" (`=>`). Before the fat
+arrow is a description of the types, and after the fat arrow
+is the description of the inputs and the output. Each of them
+is separated by a "normal arrow" (`->`). The last one is always
+the output. The ones before that are the parameters.
+
+Looking at our type of `double`, we see that it operates on things
+that you can perform arithmetic on `(Arith a)`, it takes
+one argument and produces output of the same type.
+
+You can ask Cryptol about the types of an _infix operator_
+by surrounding it with parentheses, like this:
+
+`Cryptol> ` **`:t (+)`**  
+`(+) : {a} (Arith a) => a -> a -> a`
+
+This says that plus takes two inputs, and produces one output,
+all of which are _Arithmetic_.
+
+What's an example of an input type
+that isn't Arithmetic? Concatenation is one. Check this out:
+
+`Cryptol> ` **`:t (#)`**  
+`(#) : {front, back, a} (fin front) =>`  
+`      [front]a -> [back]a`  
+`      -> [front + back]a`  
+
+This is a bit complex: What is says is that `front` and `back` are both
+sequence-lengths, and that `front` is of finite length `(fin)`. After
+the `=>`, it lets us know that the first argument has
+`front` elements, the second argument has `back` elements, and the
+output has `front + back` elements. The `a` everywhere lets us know
+that the sequence could be of anything: a single `Bit`, or another
+sequence, or whatever. They do all have to be the same thing, though.
+
+## Implementing the Caesar Cipher in Cryptol
+
+Using what you've learned so far, let's implement the Ceasar Cipher in
+Cryptol. Let's start by breaking down the process of encrypting
+and decrypting data using the Caesar Cipher.
+
+Let's guess what the function declaration should look like.
+We know that the encrypt operation takes a key and a message, so
+the function declaration probably looks something like:
+
+`caesarEncrypt key message =`  
+
+Let's talk about what the key should be. In Chapter 1, we talked about
+the key being something like K$\leftrightarrow$D, but that's hard to
+represent mathematically.
 
 ## Cryptol feature requests
 
@@ -184,3 +362,4 @@ inside functions:
  2. How about :set ascii=on is really UTF-8? so if you did
 
     `[0xF0, 0x9F, 0x9A, 0xB2]` that you'd see the bicycle emoji?
+    or maybe call it a "raw mode"?

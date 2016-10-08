@@ -91,9 +91,9 @@ we're hoping for.
 
 ### Representing negative numbers:
 
-> This section is a deep-dive. You can skip it the first time
+> _This section is a deep-dive. You can skip it the first time
 > through - but if you get bored or ever get curious, come back here
-> for some cool stuff.
+> for some cool stuff._
 
 The encodings we've discussed so far are only for positive numbers.
 If you want to represent negative numbers, there are a few options,
@@ -247,9 +247,9 @@ may uncover some of that cleverness:
 
 ### Encoding _all_ languages: Unicode
 
-> This section is a deep-dive: you can do the rest of the book knowing only
+> _This section is a deep-dive: you can do the rest of the book knowing only
 > ASCII. On the other hand, if you like to know how things work under the hood,
-> you'll enjoy learning how non-Latin web pages are encoded and transmitted.
+> you'll enjoy learning how non-Latin web pages are encoded and transmitted._
 
 Up until the mid 1990's, computer systems that needed to process languages
 whose characters are not in the ASCII tables each used their own encodings.

@@ -51,7 +51,7 @@ by Caesar to communicate orders to distant generals. The idea is that
 if the messenger was intercepted by foes of Caesar, that they wouldn't
 learn any secrets from the message they carried.
 
-![Example cipher wheel setting - you could call this A$\leftrightarrow$D, Z$\leftrightarrow$E, among other things](figures/AtoD.eps)
+![Encrypting "HELLO" with the Caesar Cipher. Key is A$\leftrightarrow$D](figures/HelloCaesar.png)
 
 Follow the instructions on the kit to decode the following punchlines:
 
