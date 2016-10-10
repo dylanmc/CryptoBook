@@ -352,14 +352,23 @@ the function declaration probably looks something like:
 
 `caesarEncrypt key message =`  
 
-Let's talk about what the key should be. In Chapter 1, we talked about
+Let's talk about how we can represent the key. In Chapter 1, we talked about
 the key being something like K$\leftrightarrow$D, but that's hard to
-represent mathematically.
+represent mathematically. If we straighten out our Caesar Cihper
+wheels into a line, it looks something like this:
+```
+zyxwvutsrqponmlkjihgfedcba <- outer wheel
+abcdefghijklmnopqrstuvwxyz <- inner wheel
+```
+If we then think about the _rotate_ operator (`>>>`), we see that they
+do something really useful. For example, let's rotate the outer wheel
+by 3:
 
-## Cryptol feature requests
+```
+zyxwvutsrqponmlkjihgfedcba <- outer wheel
+xyzabcdefghijklmnopqrstuvw <- inner wheel: ['z' .. 'a'] >>> 3
+```
 
- 1. As Sean has asked for years, a "learning" flag, for intro users - suppresses assuming and defaulting warnings
- 2. How about :set ascii=on is really UTF-8? so if you did
+Hey - that makes sense: and even the description (rotating the inner
+wheel by 3 positions) _sounds_ like what we did with the paper Caesar Cipher.
 
-    `[0xF0, 0x9F, 0x9A, 0xB2]` that you'd see the bicycle emoji?
-    or maybe call it a "raw mode"?
