@@ -1,20 +1,8 @@
-alpha : [26][8]
-alpha = ['a' .. 'z'] 
-revAlpha = reverse alpha // the Cryptologic Museum uses this - clever, actually.
+alphabet : [26][8]
+alphabet = ['a' .. 'z']
 
-caesar : {n} (fin n) => [n][8] -> [8] -> [n][8]
-caesar msg shift = genericCaesar alpha msg shift
-
-reverseCaesar : {n} (fin n) => [n][8] -> [8] -> [n][8]
-reverseCaesar msg shift = genericCaesar revAlpha msg shift
-
-genericCaesar : {n} (fin n) => [26][8] -> [n][8] -> [8] -> [n][8]
-genericCaesar wheel msg shift = [ if x == ' ' then ' ' else (wheel <<< shift) @ (x - 'a') | x <- msg ]
-
-implies x y = ~x || y
-
-selfDecrypts : {n} (fin n) => ([n][8] -> [8] -> [n][8]) -> ([8], [n][8]) -> Bit
-property selfDecrypts cypher (key, msg) = implies (allAlpha msg)  ((cypher (cypher msg key) key) == msg)
-
-allAlpha : {n} (fin n) => [n][8] -> Bit
-allAlpha msg = [ ch >= 'a' && ch <= 'z' | ch <- msg ] == ~zero
+toLower c = if c < 0x61 then c + 0x20 else c
+asciiToIndex c = (toLower c) - 'a'
+encryptChar wheel c = if c == ' ' then c else wheel @ (asciiToIndex c)
+codeWheel key = reverse alphabet >>> key
+encrypt key message = [ encryptChar (codeWheel key) c | c <- message ]

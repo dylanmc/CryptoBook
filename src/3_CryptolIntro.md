@@ -67,10 +67,10 @@ You can ask Cryptol what the type of something is with the `:t` command, like th
 
 `Cryptol> ` **`:t 0xAB`**  
 `0xab : [8]`  
-Here we've said "Hey, Cryptol: what's the type of Hex AB?" and Cryptol replied (in a friendly robotic voice "Hex AB has the type _a sequence of length 8 of bits_".
+Here we've said "Hey, Cryptol: what's the type of Hex AB?" and Cryptol replied (in a friendly robotic voice) "Hex AB has the type _a sequence of length 8 of bits_".
 
 What do you think the type of a string of text should be? For example,
-what should the type of `"hello cryptol"` be? Assume the text is ASCII, not UTF-8.
+what should the type of `"hello cryptol"` be?
 Stop reading for a minute and think about it.
 
 Really, don't just read ahead, think about the type of the string `"hello cryptol"`.
@@ -364,7 +364,7 @@ To use the code wheel in this arrangement, lookup a character from the
 top line, and the character directly below it is the encoded / decoded
 translation of that character.
 
-If we then think about the _rotate_ operator (`>>>`), we see that it
+If we think about the _rotate_ operator (`>>>`), we see that it
 does something really useful. For example, let's rotate the inner wheel
 by 4:
 
@@ -374,8 +374,10 @@ dcbazyxwvutsrqponmlkjihgfe <- inner wheel >>> 4
 ```
 
 This corresponds to the `A`$\leftrightarrow$`D` key in the `HELLO`
-example in Chapter `. It even makes sense: the description (rotating the inner
-wheel by 4 positions) _sounds_ like what we did with the paper Caesar Cipher.
+example in Chapter 1. It even makes sense: the description (rotating
+the inner wheel by 4 positions) _sounds_ like what we did with the
+paper Caesar Cipher.
+
 At this point we'd _like to use_ the index operator (`@`) to get the
 cyphertext from the inner wheel that corresponds to the plaintext on
 the outer wheel. The indexing operator needs to be a number, not a
@@ -386,10 +388,12 @@ remember that a character in Cryptol is already a number: its ASCII
 code. So, what if we subtract the ASCII code for 'a' from our
 plaintext character?
 
-In ASCII, `'a'` is 0x61, so `'a'` - `'a'` is 0, which is a good start. `'b'` is
-0x62, so `'b'` - `'a'` is 1, which is also what we're after. Here's a
-simple function that takes an ASCII character and returns its index in
-the alphabet:
+In ASCII, `'a'` is 0x61, so `'a'` - `'a'` is 0, which is a good start.
+`'b'` is 0x62, so `'b'` - `'a'` is 1, which is also what we're after.
+Finally, `'z'` - `'a'` is 25, so for that range of characters, it's
+good!
+Here's a simple function that takes an ASCII character and returns its
+index in the alphabet:
 
 `Cryptol> ` **`let asciiToIndex c = c - 'a'`**  
 
@@ -397,22 +401,22 @@ Using this function to encrypt one letter would look like this:^[Some
 of the examples on this page have backslashes (`\`) in them: it's
 because they're on more than one line: if you type the `\`, Cryptol
 will let you continue typing on the next line. Alternatively you can
-type it all on one line (and skip typing the `\`.]
+type it all on one line (and skip typing the `\`).]
 
 `Cryptol> ` **`let encryptChar wheel c = \`**  
 **`                wheel @ (asciiToIndex c)`**  
-`Cryptol> ` **`let codeWheel key  = \  `**  
+`Cryptol> ` **`let codeWheel key = \  `**  
 **`                reverse alphabet >>> key`**  
 `Cryptol> ` **`encryptChar (codeWheel 4) 'h'`**  
 `'w'`
 
-The `encryptChar` function takes a shifted wheel and a character `c`. It uses the
-index operator to extract the element from the wheel corresponding to
-the index value of the character. On the next line we defined
-`codeWheel` to be the reversed-alphabet shifted by our key. Finally we
-called our function. The first argument is our `codeWheel` with `4` as
-the key, and the
-second argument is our plaintext `h`. The output is `w` as we hoped.
+The `encryptChar` function takes a shifted wheel and a character `c`.
+It uses the index operator to extract the element from the wheel
+corresponding to the index value of the character. On the next line we
+defined `codeWheel` to be the reversed-alphabet shifted by our key.
+Finally we called our function. The first argument is our `codeWheel`
+with `4` as the key, and the second argument is our plaintext `h`. The
+output is `w` as we hoped.
 
 Now we're ready to have Cryptol do this for every character in a
 string. Remember our sequence comprehensions? Here's how that comes
@@ -420,7 +424,157 @@ together:
 
 `Cryptol> ` **`let encrypt key message = \`**  
 **`  [ encryptChar (codeWheel key) c | c <- message ]`**  
-`Cryptol> ` **`encrypt 4 'hello'`**  
+`Cryptol> ` **`encrypt 4 "hello"`**  
 `"wzssp"`
 
 Hooray!
+
+Now, what about decryption?
+
+If youp recall from Chapter 1, encryption and decryption are the same
+process. Let's test if that works:
+
+`Cryptol> ` **`encrypt 4 "wzssp"`**..
+`"hello"`
+
+Since that's not a satisfying name for a decryption routine, we can
+define `decrypt` in terms of our `encrypt` function:
+
+`Cryptol> ` **`let decrypt key message = encrypt key message`**..
+`Cryptol> ` **`decrypt 4 "wzssp"`**..
+`"hello"`
+
+Ah, much better. This has been a huge chapter. If anything didn't make
+sense, go back and read it again, or ask a partner for help. We
+shouldn't go much further without really understanding what we've
+done so far. If Cryptol gives you mysterious errors instead of the
+output you expect, check what you've typed very carefully - we'll
+learn more about the errors Cryptol prints, and what you can learn
+from them.
+
+### Handling unexpected inputs
+
+Let's try encrypting something new:
+
+`Cryptol> ` **`encrypt 7 "I LOVE PUZZLES"`**..
+```
+[warning] at <interactive>:1:1--1:30:
+  Defaulting type parameter 'bits'
+               of literal or demoted expression
+                            at <interactive>:1:8--1:9
+  to 3
+  Assuming a = 7
+
+  invalid sequence index: 232
+```
+
+Egads - what just happened? When I see something like this happen, I
+first read the error message, then I think about what I did that could
+cause it. Starting at the top, the `[warning]...` tells you advisory
+things, not errors. That warning goes on for four lines, ending in `to
+3`. The line after that is the normal helpful Cryptol telling you it's
+decided to use 7 bits for your ASCII string.
+
+The problem is in that last line `invalid sequence index: 232`. We've
+tried to use the index operator (`@`) with an invalid argument. `232`
+is a huge number - where did that come from? We tried to make sure our
+indexes were all between 0 and 25, right?
+
+At this point, it's time to start thinking about what we did wrong to
+cause this. Comparing this message to the one that worked, `"hello"`,
+there are two main differences: our new message is in ALL CAPS, and it
+also has spaces in it. It turns out those are both problems we need to
+fix.
+
+Let's start by handling upper case input. There are (at least) two
+ways we could do it. One is to have upper case input produce upper
+case output, and the other is to just make everything lower case. I
+think the second option is simpler, so let's do that first.
+
+Recall from Chapter 2's discussion about ASCII's clever design, that
+there's a simple way to convert between upper and lower case. Here
+are the Hex values of the ASCII codes for `a`, `A`, `z` and `Z`
+
+---------   ----    ----    ----    ----
+Character   A       Z       a       z
+Hex ASCII   0x41    0x5a    0x61    0x7a
+---------   ----    ----    ----    ----
+
+Hey, the difference between the upper and lower case values is exactly
+0x20!  If we want everything in lower case (WHO LIKES SHOUTING,
+REALLY?), if a character is lower than 0x61, we can add 0x20 to make
+it upper case. We use _conditional statements_ to do that in Cryptol:
+
+`Cryptol> ` **`let toLower c = if c < 0x61 then c + 0x20 else c`**  
+`Cryptol> ` **`toLower 'I'`**  
+`'i'`
+
+and just to make sure we didn't break already lower case input:
+
+`Cryptol> ` **`toLower 'i'`**  
+`'i'`
+
+As you can see, a conditional statement has three parts: the
+_condition_, the _if-expression_ and the _else-expression_.
+
+Now we can use `toLower` to improve `asciiToIndex`:
+
+`Cryptol> ` **`let asciiToIndex c = (toLower c) - 'a'`**  
+
+And now we can encrypt text without spaces:
+
+`Cryptol> ` **`encrypt 7 "iLOVEpuzzles"`**  
+`"yvslcrmhhvco"`  
+`Cryptol> ` **`decrypt 7 "yvslcrmhhvco"`**  
+`"ilovepuzzles"`  
+
+Now, how to handle spaces. The usual way to handle spaces with the
+Caesar Cipher (not in cryptography in general) is to pass them
+through. Sure, it makes the code weaker (you can see the length of
+words), but this part of the lesson isn't about good codes. To pass
+spaces through from the input to the output, the best place to do that
+is with a conditional in the encryptChar function:
+
+`Cryptol> ` **`let encryptChar wheel c = \`
+`if c == ' ' then c else wheel @ (asciiToIndex c)`**  
+
+Let's test it, first on a space (since that's our new feature), then
+on an uppercase letter, and then on a lowercase letter:
+
+`Cryptol> ` **`encryptChar (codeWheel 7) ' '`**  
+`' '`  
+`Cryptol> ` **`encryptChar (codeWheel 7) 'I'`**  
+`'y'`  
+`Cryptol> ` **`encryptChar (codeWheel 7) 'i'`**  
+`'y'`  
+
+Yay, it looks like it'll work. Now let's encrypt and decrypt our original message:
+
+`Cryptol> ` **`encrypt 7 "I LOVE PUZZLES"`**  
+`"y vslc rmhhvco"`  
+`Cryptol> ` **`decrypt 7 "y vslc rmhhvco"`**  
+`"i love puzzles"`  
+
+Wow - it all worked! If it didn't, go through the error messages, and
+see if you can figure out what happened.
+
+## What we covered this chapter
+
+ * Launching Cryptol, and asking about _types_ of data with the `:t`
+   command.
+ * _enumerations_ are shortcuts for creating sequences, like [1 .. 10]
+ * _comprehensions_ are ways of manipulating elements of sequences,
+ * _functions_ define how to create an output value from one or more
+   inputs (called _arguments_),
+ * a number of functions that operate on sequences, like _indexing_,
+   _reversing_, _concatenating_,
+ * finally, we implemented the Caesar Cipher in Cryptol, step by step:
+     1. converting ASCII characters to indexes,
+     2. rotating the alphabet to make an encryption sequence,
+     3. indexing the encryption sequence to encrypt one character,
+     4. using a _comprehension_ to encrypt a whole string,
+     5. using _conditional expressions_ to convert uppercase to
+        lowercase,
+     6. and handling the space character, `' '`, by passing it through.
+
+That's a lot of stuff - congratulations!
