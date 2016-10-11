@@ -357,18 +357,70 @@ the key being something like K$\leftrightarrow$D, but that's hard to
 represent mathematically. If we straighten out our Caesar Cihper
 wheels into a line, it looks something like this:
 ```
-zyxwvutsrqponmlkjihgfedcba <- outer wheel
-abcdefghijklmnopqrstuvwxyz <- inner wheel
+abcdefghijklmnopqrstuvwxyz <- outer wheel
+zyxwvutsrqponmlkjihgfedcba <- inner wheel
 ```
-If we then think about the _rotate_ operator (`>>>`), we see that they
-do something really useful. For example, let's rotate the outer wheel
-by 3:
+To use the code wheel in this arrangement, lookup a character from the
+top line, and the character directly below it is the encoded / decoded
+translation of that character.
+
+If we then think about the _rotate_ operator (`>>>`), we see that it
+does something really useful. For example, let's rotate the inner wheel
+by 4:
 
 ```
-zyxwvutsrqponmlkjihgfedcba <- outer wheel
-xyzabcdefghijklmnopqrstuvw <- inner wheel: ['z' .. 'a'] >>> 3
+abcdefghijklmnopqrstuvwxyz <- outer wheel
+dcbazyxwvutsrqponmlkjihgfe <- inner wheel >>> 4
 ```
 
-Hey - that makes sense: and even the description (rotating the inner
-wheel by 3 positions) _sounds_ like what we did with the paper Caesar Cipher.
+This corresponds to the `A`$\leftrightarrow$`D` key in the `HELLO`
+example in Chapter `. It even makes sense: the description (rotating the inner
+wheel by 4 positions) _sounds_ like what we did with the paper Caesar Cipher.
+At this point we'd _like to use_ the index operator (`@`) to get the
+cyphertext from the inner wheel that corresponds to the plaintext on
+the outer wheel. The indexing operator needs to be a number, not a
+letter. For the index operator to do what we want, plaintext 'a'
+should be '0', 'b' should be '1', all the way up to 'z' should be 25.
+Let's pause to think about how to achieve that in Cryptol. First,
+remember that a character in Cryptol is already a number: its ASCII
+code. So, what if we subtract the ASCII code for 'a' from our
+plaintext character?
 
+In ASCII, `'a'` is 0x61, so `'a'` - `'a'` is 0, which is a good start. `'b'` is
+0x62, so `'b'` - `'a'` is 1, which is also what we're after. Here's a
+simple function that takes an ASCII character and returns its index in
+the alphabet:
+
+`Cryptol> ` **`let asciiToIndex c = c - 'a'`**  
+
+Using this function to encrypt one letter would look like this:^[Some
+of the examples on this page have backslashes (`\`) in them: it's
+because they're on more than one line: if you type the `\`, Cryptol
+will let you continue typing on the next line. Alternatively you can
+type it all on one line (and skip typing the `\`.]
+
+`Cryptol> ` **`let encryptChar wheel c = \`**  
+**`                wheel @ (asciiToIndex c)`**  
+`Cryptol> ` **`let codeWheel key  = \  `**  
+**`                reverse alphabet >>> key`**  
+`Cryptol> ` **`encryptChar (codeWheel 4) 'h'`**  
+`'w'`
+
+The `encryptChar` function takes a shifted wheel and a character `c`. It uses the
+index operator to extract the element from the wheel corresponding to
+the index value of the character. On the next line we defined
+`codeWheel` to be the reversed-alphabet shifted by our key. Finally we
+called our function. The first argument is our `codeWheel` with `4` as
+the key, and the
+second argument is our plaintext `h`. The output is `w` as we hoped.
+
+Now we're ready to have Cryptol do this for every character in a
+string. Remember our sequence comprehensions? Here's how that comes
+together:
+
+`Cryptol> ` **`let encrypt key message = \`**  
+**`  [ encryptChar (codeWheel key) c | c <- message ]`**  
+`Cryptol> ` **`encrypt 4 'hello'`**  
+`"wzssp"`
+
+Hooray!
