@@ -5,6 +5,8 @@ you had to leave your machine, reboot, or whatever, you had to start
 from scratch. "That's no good", I hear you say, "there must be 
 another way!" Indeed there is.
 
+## Storing Cryptol programs in files
+
 In addition to typing commands at the Cryptol interpreter, Cryptol can
 load files that have programs in them. Programs are slightly different
 from the commands you've been typing so far. The main difference is
@@ -45,9 +47,12 @@ Then, using whichever editor you choose, create a file called
 alphabet = ['a' .. 'z']
 toLower c = if c < 0x61 then c + 0x20 else c
 asciiToIndex c = (toLower c) - 'a'
-encryptChar wheel c = if c == ' ' then c else wheel @ (asciiToIndex c)
+encryptChar wheel c = if c == ' '
+    then c
+    else wheel @ (asciiToIndex c)
 codeWheel key = reverse alphabet >>> key
-encrypt key message = [ encryptChar (codeWheel key) c | c <- message ]
+encrypt key message =
+    [ encryptChar (codeWheel key) c | c <- message ]
 decrypt key message = encrypt key message
 ```
 

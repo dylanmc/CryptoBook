@@ -560,9 +560,11 @@ see if you can figure out what happened.
 
 ## What we covered this chapter
 
- * Launching Cryptol, and asking about _types_ of data with the `:t`
-   command.
- * _enumerations_ are shortcuts for creating sequences, like [1 .. 10]
+We covered a lot of ground this chapter:
+
+ * Launching Cryptol and asking about _types_ of data with the `:t`
+   command,
+ * _enumerations_ are shortcuts for creating sequences, like `[1 .. 10]`,
  * _comprehensions_ are ways of manipulating elements of sequences,
  * _functions_ define how to create an output value from one or more
    inputs (called _arguments_),
