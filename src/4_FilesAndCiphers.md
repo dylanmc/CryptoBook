@@ -11,7 +11,9 @@ from the commands you've been typing so far. The main difference is
 that you don't need `let` when you're defining a variable (like
 `alphabet`) or a function (like `encrypt').
 
-The next thing you'll want to do is create a working directory (or
+## Creating a text file in a project directory
+
+The next thing you'll want to do is create a directory (or
 folder) to keep your project files for this book.
 You'll need to figure out how to edit _text files_ on your computer.
 Text files are different from, say, word processing documents, in that
@@ -28,7 +30,7 @@ _nano_ (`https://www.nano-editor.org/`), and many others. If you're on
 Windows, and are in a pinch, both _Notepad_ and _Wordpad_ can "Save
 As" _plain text_.
 
-## Exercise: rewriting our Caesar Cipher program
+### Exercise: rewriting our Caesar Cipher program
 
 Start this exercise by creating your project directory. On a Unix
 systems (like Linux or MacOS), you'll want to start up a Terminal
@@ -55,7 +57,7 @@ The first line (`// Caesar Cipher`) is a comment: it's text to remind
 you what's in the file. With our more complex programs, we'll add more
 comments. They'll help remind us what's going on.
 
-## Running Cryptol with `caesar.cry`
+### Running Cryptol with `caesar.cry`
 
 Now that we have a file with our Caesar Cipher in it. To run
 that program, launch Cryptol from inside your project directory.
@@ -89,7 +91,12 @@ need to use a shell command to move into your CryptoBook directory.
 If that's proving difficult, ask a partner or look up _command line
 navigating files_ for the operating system you're running on.
 
+Let's see our encrypted string:
+
 `Main> ` **`:set ascii=on`**  
 `Main> ` **`encrypt 4 "using files now"`**  
 `"jlvqx yvszl qph"`
 
+Hooray! You'll never have to type the Caesar Cipher again.
+
+## Implementing our next cipher: Viginere

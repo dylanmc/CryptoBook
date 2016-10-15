@@ -45,7 +45,7 @@ subtle ways.
 
 ## Let's get started
 
-Print out and assemble the Reverse Caesar Cipher kit that comes with
+Print out and assemble the Caesar Cipher kit that comes with
 the book.  The Caesar Cipher is one of the earlest known ciphers, used
 by Caesar to communicate orders to distant generals. The idea is that
 if the messenger was intercepted by foes of Caesar, that they wouldn't
@@ -80,11 +80,11 @@ about how "real world" cryptography works later in this book.
 
 ## Things to ponder
 
- 1. you may have noticed that the cipher in this chapter has been
-    called the Caesar Cipher but the cardboard version is called
-    the Reverse Caesar Cipher. What do you think the difference
-    between them is? Is there an advantage or disadvantage to either
-    of them?
+ 1. you may have seen a Caesar Cipher whose inner wheel and outer
+    wheel go in the same direction, but the one in this book has them
+    going in opposite directions. What attributes do each version
+    have? What advantages or disadvantages can you think between the
+    two versions?
 
  1. if it took you one minute to try to decrypt a message using a key
     you guessed, how long would it take, on average, to decrypt a
