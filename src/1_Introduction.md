@@ -45,13 +45,13 @@ subtle ways.
 
 ## Let's get started
 
-Print out and assemble the Caesar Cipher kit that comes with
-the book.  The Caesar Cipher is one of the earlest known ciphers, used
+Print out and assemble the "Caesar cipher kit" that comes with
+the book.  The Caesar cipher is one of the earlest known ciphers, used
 by Caesar to communicate orders to distant generals. The idea is that
 if the messenger was intercepted by foes of Caesar, that they wouldn't
 learn any secrets from the message they carried.
 
-![Encrypting "HELLO" with the Caesar Cipher. Key is A$\leftrightarrow$D](figures/HelloCaesar.png)
+![Encrypting "HELLO" with the Caesar cipher. Key is A$\leftrightarrow$D](figures/HelloCaesar.png)
 
 Follow the instructions on the kit to decode the following punchlines:
 
@@ -68,19 +68,19 @@ A backward poet ... (Key: H$\leftrightarrow$H)
 `SXGVKW GBTKXWK`
 
 If you managed to decrypt all three of these, congratulations - that's a lot
-of work! When I use a Caesar's Cipher wheel, it takes about 3 seconds per
+of work! When I use a Caesar's cipher wheel, it takes about 3 seconds per
 letter to encrypt or decrypt a message. At that rate, it would take about an
 hour to encrypt a whole page of text, which is way too long.
 
 Given how tedious it is to decrypt, even when you know the key, it's not too
 hard of a stretch to imagine Caesar thinking this cipher was good enough.
 Now that we have computers, it's a lot easier to encrypt and decrypt
-messages, and the Caesar Cipher is not close to good enough. We'll learn
+messages, and the Caesar cipher is not close to good enough. We'll learn
 about how "real world" cryptography works later in this book.
 
 ## Things to ponder
 
- 1. you may have seen a Caesar Cipher whose inner wheel and outer
+ 1. you may have seen a Caesar cipher whose inner wheel and outer
     wheel go in the same direction, but the one in this book has them
     going in opposite directions. What attributes do each version
     have? What advantages or disadvantages can you think between the
@@ -88,7 +88,7 @@ about how "real world" cryptography works later in this book.
 
  1. if it took you one minute to try to decrypt a message using a key
     you guessed, how long would it take, on average, to decrypt a
-    Caesar Cipher message whose key you don't know^[Hint: first, how
+    Caesar cipher message whose key you don't know^[Hint: first, how
     many different possible keys are there? It's safe to guess that on
     average, you'll have to try half of them before guessing the right
     one.]? If it takes a computer 1 millisecond try one key on a
@@ -97,7 +97,7 @@ about how "real world" cryptography works later in this book.
 
  2. how much more secure would it be to have weird symbols (Greek
     letters or Egyption heiroglyphics), instead of letters, for the
-    cyphertext in a Caesar's Cipher? Explain your answer.
+    cyphertext in a Caesar's cipher? Explain your answer.
 
  3. _key distribution_ is the challenge of getting the secret key to
     your friend. One way to distribute a key would be to include it in
@@ -108,4 +108,4 @@ about how "real world" cryptography works later in this book.
 
 ## Take-aways
 
-You've thought about why cryptography is important. You know how to encrypt and decrypt messages using the Caesar Cipher. You have thought about how secure it is, including the aspects of key distribution.
+You've thought about why cryptography is important. You know how to encrypt and decrypt messages using the Caesar cipher. You have thought about how secure it is, including the aspects of key distribution.

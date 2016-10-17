@@ -3,7 +3,7 @@ _"There are 10 kinds of people in the world:
 those who know binary and those who don't."_
 
 Now that you've seen encryption and decryption at work, it's time to learn how
-computers do it. Our Caesar's Cipher wheel is a paper computer which has an
+computers do it. Our Caesar's cipher wheel is a paper computer which has an
 alphabet of 26 elements. You've heard (most likely) that computers work with
 ones and zeros. One's and zeros are not very helpful by themselves, so
 people figured out how to represent integers, floating point numbers and all of
