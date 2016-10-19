@@ -129,7 +129,7 @@ message:
 "wlszknzlosgeyfzueyalknzqlsfmoaosqlhozzob"
 ```
 
-## Implementing our next cipher: Viginere
+## Implementing our next cipher: Vigenère
 
 Given the previous exercise (please actually do it -- it's a lot of
 fun, and very informative), it's probably occured to you that the
@@ -187,7 +187,7 @@ forever, as soon as you expand any key - we haven't told Cryptol ever
 to stop!" That's right, we haven't, but let's give it a try anyway.
 First, copy your `caesar.cry` into a new file called `viginere.cry`
 (because we'd like to reuse a lot of the code in `caesar.cry`, and I
-promised you wouldn't have to type it in again. Second, add the above
+promised you wouldn't have to type it in again). Second, add the above
 definition of `expandKey` to the end of your `viginere.cry`  Finally,
 start up Cryptol:
 
@@ -213,7 +213,7 @@ Loading module Main
 `'E'`  
 
 Let's go through that line-by-line. First, we `set ascii=on` so we can
-see the ASCII key strings. Second', we defined a temporary variable
+see the ASCII key strings. Second, we defined a temporary variable
 `myXkey` to be the result of expanding `"HELLO"`. Next we asked
 Cryptol to show it to us. But rather uninterestingly, it just showed
 us the first five characters, but at the end it shows "...",
@@ -228,7 +228,8 @@ sequence comprehension. We need this because we need to access both the
 next character of the expanded key stream and of the message in order
 to produce the next character of the ciphertext. Cryptol's way of
 doing this is called a _parallel comprehension_, and it looks like
-this:
+this: ^[Note the `\`'s - you can either type this all on one line, or use
+`\`'s and newlines where they appear here.]
 
 ```
 Main> [ encryptChar (codeWheel k) c \
@@ -236,8 +237,6 @@ Main> [ encryptChar (codeWheel k) c \
       | k <- expandKey [0 .. 10] ]
 "ss jwaoc"
 ```
-^[Note the `\`'s - you can either type this all on one line, or use
-`\`'s and newlines where they appear here.]
 
 One way to think of how parallel comprehensions work is like a zipper,
 When you zip up your jacket, the pull joins the elements (teeth) from
@@ -254,11 +253,11 @@ approaching infinite sequences and "evaluate on-demand" is called
 `lazy evaluation`, and it's a really powerful feature of Cryptol, and
 you'll see it's used quite a bit.
 
-This is _almost_ the Viginere cipher: we're shifting our plaintext a
+This is _almost_ the Vigenère cipher: we're shifting our plaintext a
 different amount each time, but we're getting the shift amount from
 `[0 .. 10]` repeated, instead of a key string turned into indexes.
 
-See if you can finish the implementation of the Viginere cipher based
+See if you can finish the implementation of the Vigenère cipher based
 on what you know about Cryptol now.
 
 It should start like this:
@@ -267,7 +266,3 @@ It should start like this:
 viginere key message =
   ... you fill in the rest
 ```
-
-***Picasim - RC simulator***
-- total rc (indoor sim?) -
-
