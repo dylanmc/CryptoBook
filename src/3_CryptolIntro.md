@@ -148,7 +148,7 @@ each, and the result doesn't wrap around.
 In math, _functions_ describe a way of creating an _output_ from one or more
 _inputs_. Functions in Cryptol are the same thing, and you can give them
 names if you want. Here's a picture example of a functioned named $f$,
-which takes two variables, $x$ and $y$ and returns their sum:
+which takes two _parameters_, $x$ and $y$ and returns their sum:
 
 ```
 Inputs            Function                  Output
@@ -167,7 +167,7 @@ One way to define a function is with the `let` command, like this:
 `Assuming a = 3`  
 `0x0`
 
-What? Oh, yeah, Cryptol let us know it was working with 3 bits,
+What? $4+4=0$? Oh, yeah, Cryptol let us know it was working with 3 bits,
 because that's how many you need for 4, but 4+4 is 8 which needs 4
 bits, and the remainder is 0. The quickest way to get Cryptol to
 work with more bits is to use hex and add a leading 0:
@@ -176,7 +176,7 @@ work with more bits is to use hex and add a leading 0:
 `0x08`
 
 Whew. That's better. Here's a definition of our function $f$, which
-takes two inputs:
+has two parameters:
 
 `Cryptol> ` **`let f x y = x + y`**  
 `Cryptol> ` **`f 0x07 0x05`**  
@@ -253,9 +253,18 @@ One more thing: `@` and `!` act a lot like functions, but they're called
 _infix operators_. The only difference between a function and an operator is
 that when you call a function, its name comes first followed by the
 values you want the function to operate on (we call those its
-_arguments_). Operators only work with 2-arguments, and the operator
+_arguments_). Operators only work with two arguments, and the operator
 name comes _between_ the two arguments. All of the normal math operators you're
 familiar with are infix operators, like: $5 + 2 - 3$.
+
+**_Arguments vs. parameters_**: when we talk about defining and
+calling functions, we've talked about both _arguments_ and
+_parameters_, so you may wonder "what's the difference?" The answer is
+that _parameters are in a function's definition_, and _arguments are
+what you pass to a function when you call it_. So:
+
+`let foo x y = x - y` // x and y are the parameters of _f_  
+`f 5 3` // here we've passed 5 and 3 as arguments to f
 
 ### Reversing a sequence
 
@@ -340,11 +349,11 @@ output has `front + back` elements. The `a` everywhere lets us know
 that the sequence could be of anything: a single `Bit`, or another
 sequence, or whatever. They do all have to be the same thing, though.
 
-## Implementing the Caesar Cipher in Cryptol
+## Implementing the Caesar cipher in Cryptol
 
-Using what you've learned so far, let's implement the Ceasar Cipher in
+Using what you've learned so far, let's implement the Ceasar cipher in
 Cryptol. Let's start by breaking down the process of encrypting
-and decrypting data using the Caesar Cipher.
+and decrypting data using the Caesar cipher.
 
 Let's guess what the function declaration should look like.
 We know that the encrypt operation takes a key and a message, so
@@ -360,7 +369,7 @@ wheels into a line, it looks something like this:
 abcdefghijklmnopqrstuvwxyz <- outer wheel
 zyxwvutsrqponmlkjihgfedcba <- inner wheel
 ```
-To use the code wheel in this arrangement, lookup a character from the
+To use the code wheel in this arrangement, look up a character from the
 top line, and the character directly below it is the encoded / decoded
 translation of that character.
 
@@ -376,7 +385,7 @@ dcbazyxwvutsrqponmlkjihgfe <- inner wheel >>> 4
 This corresponds to the `A`$\leftrightarrow$`D` key in the `HELLO`
 example in Chapter 1. It even makes sense: the description (rotating
 the inner wheel by 4 positions) _sounds_ like what we did with the
-paper Caesar Cipher.
+paper Caesar cipher.
 
 At this point we'd _like to use_ the index operator (`@`) to get the
 cyphertext from the inner wheel that corresponds to the plaintext on
@@ -440,11 +449,18 @@ process. Let's test if that works:
 Since that's not a satisfying name for a decryption routine, we can
 define `decrypt` in terms of our `encrypt` function:
 
-`Cryptol> ` **`let decrypt key message = encrypt key message`**..
-`Cryptol> ` **`decrypt 4 "wzssp"`**..
-`"hello"`
+`Cryptol> ` **`let decrypt k m = encrypt k m`**  
+`Cryptol> ` **`decrypt 4 "wzssp"`**  
+`"hello"`  
 
-Ah, much better. This has been a huge chapter. If anything didn't make
+Ah, much better. One thing to note here: in our definition of encrypt,
+the parameters were called `key` and `message`, but here we called
+them `k` and `m`. The reason that's not a problem is that when you're
+defining a function, you are free to name the parameters whatever you
+want - the only thing you have to remember is to use those same names
+in the body of your function.
+
+This has been a huge chapter. If anything didn't make
 sense, go back and read it again, or ask a partner for help. We
 shouldn't go much further without really understanding what we've
 done so far. If Cryptol gives you mysterious errors instead of the
@@ -477,8 +493,8 @@ decided to use 7 bits for your ASCII string.
 
 The problem is in that last line `invalid sequence index: 232`. We've
 tried to use the index operator (`@`) with an invalid argument. `232`
-is a huge number - where did that come from? We tried to make sure our
-indexes were all between 0 and 25, right?
+is way bigger than 25 - where did that come from? We subtracted `'a'`
+to make sure our indexes were all between 0 and 25, right?
 
 At this point, it's time to start thinking about what we did wrong to
 cause this. Comparing this message to the one that worked, `"hello"`,
@@ -489,7 +505,7 @@ fix.
 Let's start by handling upper case input. There are (at least) two
 ways we could do it. One is to have upper case input produce upper
 case output, and the other is to just make everything lower case. I
-think the second option is simpler, so let's do that first.
+think the second option is simpler, so let's do that.
 
 Recall from Chapter 2's discussion about ASCII's clever design, that
 there's a simple way to convert between upper and lower case. Here
@@ -505,7 +521,7 @@ Hey, the difference between the upper and lower case values is exactly
 REALLY?), if a character is lower than 0x61, we can add 0x20 to make
 it upper case. We use _conditional statements_ to do that in Cryptol:
 
-`Cryptol> ` **`let toLower c = if c < 0x61 then c + 0x20 else c`**  
+`Cryptol> ` **`let toLower c = if c < 'a' then c + 0x20 else c`**  
 `Cryptol> ` **`toLower 'I'`**  
 `'i'`
 
@@ -521,7 +537,7 @@ Now we can use `toLower` to improve `asciiToIndex`:
 
 `Cryptol> ` **`let asciiToIndex c = (toLower c) - 'a'`**  
 
-And now we can encrypt text without spaces:
+And now we can encrypt text with upper and lower case (but without spaces):
 
 `Cryptol> ` **`encrypt 7 "iLOVEpuzzles"`**  
 `"yvslcrmhhvco"`  
@@ -529,7 +545,7 @@ And now we can encrypt text without spaces:
 `"ilovepuzzles"`  
 
 Now, how to handle spaces. The usual way to handle spaces with the
-Caesar Cipher (not in cryptography in general) is to pass them
+Caesar cipher (not in cryptography in general) is to pass them
 through. Sure, it makes the code weaker (you can see the length of
 words), but this part of the lesson isn't about good codes. To pass
 spaces through from the input to the output, the best place to do that
@@ -570,7 +586,7 @@ We covered a lot of ground this chapter:
    inputs (called _arguments_),
  * a number of functions that operate on sequences, like _indexing_,
    _reversing_, _concatenating_,
- * finally, we implemented the Caesar Cipher in Cryptol, step by step:
+ * finally, we implemented the Caesar cipher in Cryptol, step by step:
      1. converting ASCII characters to indexes,
      2. rotating the alphabet to make an encryption sequence,
      3. indexing the encryption sequence to encrypt one character,
