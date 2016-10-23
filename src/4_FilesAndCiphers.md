@@ -65,7 +65,8 @@ comments. They'll help remind us what's going on.
 ### Running Cryptol with `caesar.cry`
 
 Now that we have a file with our Caesar cipher in it. To run
-that program, launch Cryptol from inside your project directory.
+that program, launch Cryptol from inside your project directory
+but include the name of the file you want it to load, like this:
 
 `$ ` **`cryptol caesar.cry`**  
 ```
@@ -115,8 +116,8 @@ But before using brute force, let's look at the following
 encoded message, and see if there are any clues to decryption:
 
 ```
-"seh zldy wuxkahz pdse seh jlhtlu jdwehu dt sehuh luh xyan sphysn tdo
-wxttdkah bhnt"
+"seh zldy wuxkahz pdse seh jlhtlu jdwehu dt sehuh
+luh xyan sphysn tdo wxttdkah bhnt"
 ```
 
 Before reading further, come up with two approaches you'd take to
@@ -242,15 +243,21 @@ One way to think of how parallel comprehensions work is like a zipper,
 When you zip up your jacket, the pull joins the elements (teeth) from
 each side and combines them (zips the teeth together). The length of
 the resulting sequence is the shorter of the two lengths of the sides
-of the zipper. In this case, it's the length of "hi there", because
+of the zipper. In this case, it's the length of our message, "hi there", because
 our expanded key has infinite length.
 
-This also explains how Cryptol doesn't have to grind to a halt when you ask it
+```
+  h   i       t   h   e   r   e
+  0   1   2   3   4   5   6   7   8   9   10   0   1 ...
+  -> zip along the elements (TODO: make this pretty)
+```
+
+This also explains how Cryptol doesn't have to run forever when you ask it
 to define an infinitely expanded key: it only evaluates elements of a
 list as you ask for them. As long as you ask for only a finite number
 of them, Cryptol only evaluates that many of them. This way of
 approaching infinite sequences and "evaluate on-demand" is called
-`lazy evaluation`, and it's a really powerful feature of Cryptol, and
+`lazy evaluation`; it's a really powerful feature of Cryptol, and
 you'll see it's used quite a bit.
 
 This is _almost_ the Vigenère cipher: we're shifting our plaintext a
@@ -266,3 +273,41 @@ It should start like this:
 viginere key message =
   ... you fill in the rest
 ```
+
+### Exercises
+
+ 1. Use your implementation of the Vigenère cipher to encode and
+    decode some messages. Notice some of the improvements using longer
+    keys makes.
+
+ 1. Decrypt the following message, using the key:
+    `"thisphraseismykey"`
+
+    `"qrucuvso dtoezje yzspd yordwt llsarvnij jzrwyam"`
+
+ 1. One kind of attack against a code is when you know what some or
+    all of a message is, and use that knowledge to learn something
+    about the key. This was used during World War II, when the
+    Allied cryptanalysts guessed the word "weather" would appear in a
+    German message that was encrypted with the Enigma machine.
+    This technique is called a _known plaintext attack_.
+
+    Think about how you could learn the key used in a
+    Vigenère-encrypted message if you knew that a message started with
+    the plaintext `"At the tone the time will be...".` started with
+    the following ciphertext: `"gg njc fyjg doa joec jyfv xi"`.
+
+## What we covered this chapter
+
+We started by learning how to program in Cryptol using files, and how to
+run Cryptol using a file you wrote. Next, we discussed some of the
+weaknesses of the Caesar cipher, and even did some codebreaking that
+uses those weaknesses. This lead to a discussion of increasing key
+length, which is exactly what the Vigenère cipher does. We learned
+about _key expansion_, and did it in Cryptol using _recursion_. We
+combined the expanded key with the message using _parallel
+comprehensions_, and learned that Cryptol uses _lazy evaluation_ to
+avoid infinite loops when sequences are infinitely long. Finally, you
+used the techniques learned in this chapter to implement your own
+Vigenère cipher. The exercises gave you a chance to exercise your new
+code.
