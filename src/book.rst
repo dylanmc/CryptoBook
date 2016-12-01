@@ -15,5 +15,6 @@ Contents:
    02_encoding
    03_cryptol
    04_morecomplex
+   05_enigma
 
 

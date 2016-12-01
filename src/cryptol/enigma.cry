@@ -1,0 +1,19 @@
+alphabet   = [ 'A' .. 'Z' ]
+rotorI     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+
+asciiToIndex c = c - 'A'
+
+doRotor rotor c = rotor @ (asciiToIndex c)
+
+doTwoRotors rotor reflector c = doRotor rotor (doRotor reflector (doRotor rotor c))
+
+indexOf c shuffle = candidates ! 0 where
+    candidates = [ -1 ] # [ if c == s then i else p
+                          | s <- shuffle
+                          | p <- candidates
+                          | i <- [ 0 .. 25 ]
+                          ]
+
+invertShuffle shuffle = [ alphabet @ (indexOf c shuffle)
+                        | c <- alphabet ]

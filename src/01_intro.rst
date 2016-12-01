@@ -88,16 +88,17 @@ Given how tedious it is to decrypt, even when you know the key, it's not
 too hard of a stretch to imagine Caesar thinking this cipher was good
 enough. Now that we have computers, it's a lot easier to encrypt and
 decrypt messages, and the Caesar cipher is not close to good enough.
-We'll learn about how "real world" cryptography works later in this
+We'll learn about how modern cryptography works later in this
 book.
 
 Things to ponder
 ----------------
 
-1. you may have seen a Caesar cipher whose inner wheel and outer wheel
-   go in the same direction, but the one in this book has them going in
-   opposite directions. What attributes do each version have? What
-   advantages or disadvantages can you think between the two versions?
+1. notice that the order of the alphabet is reversed on your Caesar
+   cipher's inner wheel. You may have seen a Caesar cipher whose inner
+   wheel and outer wheel go in the same direction.  What attributes do
+   each version have? What advantages or disadvantages can you think
+   between the two versions?
 
 2. if it took you one minute to try to decrypt a message using a key you
    guessed, how long would it take, on average, to decrypt a Caesar

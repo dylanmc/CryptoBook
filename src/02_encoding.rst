@@ -194,8 +194,10 @@ Things to think about
 3. When we did :math:`-1 + 3`, the carry bit got carried off the end of
    the addition. This is called overflow. In some cases (like this one),
    it's not a problem, but in other cases, it means that you get the
-   wrong answer. Think about whether you can check whether overflow has
+   wrong answer. Think about whether you can check whether overflow
+   that results in a wrong answer has
    occured either before or after the addition has happened.
+   Hint: think about the various possible cases separately.
 
 .. index:: one's complement
 4. Two's complement is a slight change from *one's complement*, in which
@@ -406,7 +408,7 @@ finally how that number is encoded in UTF-8.
 In the table above, the "U+" lets you know that the hex number that
 follows is the location in the Unicode table, and you see that the UTF-8
 encoding is also written in hex. There's a cool webpage at
-```http://unicode-table.com/en/`` <http://unicode-table.com/en/>`__ that
+``http://unicode-table.com/en/`` that
 has the whole table in one page. On the right of the page there is a
 live map with dots in the parts of the world where the characters
 visible on the current screen are used.

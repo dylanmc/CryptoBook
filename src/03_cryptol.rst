@@ -24,14 +24,30 @@ is running MacOS, Windows or Linux. Instructions for all three are
 provided on the Cryptol website, which is ``http://cryptol.org``
 
 You're ready to go with the rest of the chapter (and book) if you can
-run Cryptol, and follow along with the session below. In the examples
-below, **``what you type will be in bold``**, and
-``what the computer types will be in non-bold (like this)``.
+run Cryptol, and follow along with the session below.
+
+.. (stick this back in once I've written a Crytpol-Console pygment)
+   In the examples below, **``what you type will be in bold``**, and
+   ``what the computer types will be in non-bold (like this)``.
 
 *start cryptol, however you're supposed to on your system*
 
-.. literalinclude:: 03_code-01.icry
-   :language: console
+.. code-block:: console
+
+  % cryptol
+                         _        _
+    ___ _ __ _   _ _ __ | |_ ___ | |
+   / __| '__| | | | '_ \| __/ _ \| |
+  | (__| |  | |_| | |_) | || (_) | |
+   \___|_|   \__, | .__/ \__\___/|_|
+             |___/|_|  version 2.4.0
+
+  Loading module Cryptol
+  Cryptol> 4 + 2
+  Assuming a = 3
+  0x6
+  Cryptol>
+
 
 Here you've asked Cryptol to evaluate :math:`4 + 2`, and it responded
 with ``0x6``, which is a hexadecimal answer, but it's still just 6.
