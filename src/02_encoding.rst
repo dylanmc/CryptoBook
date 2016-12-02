@@ -5,7 +5,7 @@ Encoding data into bits
 those who don't."*
 
 Now that you've seen encryption and decryption at work, it's time to
-learn how computers do it. Our Caesar's cipher wheel is a paper computer
+learn how computers do it. Our Caesar cipher wheel is a paper computer
 which has an alphabet of 26 elements. You've heard (most likely) that
 computers work with ones and zeros. One's and zeros are not very helpful
 by themselves, so people figured out how to represent integers, floating
@@ -102,7 +102,7 @@ Here's a four-bit addition of 2 and 3:
       0101
 
 If you're talking about numbers in different bases, and it's not clear
-which one you're refering to, it's common to include the base in the
+which one you're referring to, it's common to include the base in the
 subscript after the number. So the joke at the beginning of the chapter
 would be "There are 10\ :sub:`2` types of people..."\ [#]_.
 
@@ -196,7 +196,7 @@ Things to think about
    it's not a problem, but in other cases, it means that you get the
    wrong answer. Think about whether you can check whether overflow
    that results in a wrong answer has
-   occured either before or after the addition has happened.
+   occurred either before or after the addition has happened.
    Hint: think about the various possible cases separately.
 
 .. index:: one's complement
@@ -253,7 +253,7 @@ agreed on in 1963, and was in wide use through the mid 1990's.
 .. index:: ASCII
 The table below show how ASCII represents the basic letters, numbers and
 punctuation. Each character is followed by its decimal ASCII code. There
-are two "special" charaters in the table, ``sp`` is the space character,
+are two "special" characters in the table, ``sp`` is the space character,
 and ``del`` is delete\ [#]_.
 
 .. [#] delete is more of an un-character, but it has an ASCII code. So
@@ -380,7 +380,7 @@ and it takes two hex digits to hold a byte.
 
 .. [#] and the next digit is the 256'ths place!
 
-Finally, there are a number of ways of indicating what base a nuber is
+Finally, there are a number of ways of indicating what base a number is
 in. In addition to using the subscript of the base, like spoiling the
 joke with 10\ :sub:`2`, when you are writing numbers in ASCII and
 there's no way to write subscripts, instead we prefix binary numbers
@@ -407,7 +407,7 @@ finally how that number is encoded in UTF-8.
 
 In the table above, the "U+" lets you know that the hex number that
 follows is the location in the Unicode table, and you see that the UTF-8
-encoding is also written in hex. There's a cool webpage at
+encoding is also written in hex. There's a cool web page at
 ``http://unicode-table.com/en/`` that
 has the whole table in one page. On the right of the page there is a
 live map with dots in the parts of the world where the characters
@@ -471,7 +471,7 @@ to.
    What's an image encoding method you know about? Use Google to find a
    specification for that format, and Write down how files in that
    format are structured. Most formats have a *header* which provides
-   *metatada* about the file\ [#]_.
+   *metadata* about the file\ [#]_.
 
 .. [#] The word *metadata* literally means "data about data", which
     particularly makes sense in this context.
@@ -480,7 +480,7 @@ to.
 
 2. **File archives** are encodings that combine a bunch of files and
    folders into one file that can be sent by email, or downloaded from a
-   website, etc., and then *unpacked* at the other end. Archive formats
+   web site, etc., and then *unpacked* at the other end. Archive formats
    often include the ability to compress the files as well. It's often
    surprising which file formats are archives. For example, most word
    processing document formats are file archives, to allow you to
@@ -497,5 +497,6 @@ Take-aways
 
 You've learned about how to encode data of different types (numbers,
 characters) into binary representations. You've learned some binary
-arithmetic, and why 10\ :sub:`2` is 2\ :sub:`10`. Finally you've learned
-that nerds (the author included) can have a terrible sense of humor.
+arithmetic, and why 10\ :sub:`2` happens to be equal to 2\ :sub:`10`.
+Finally you've learned that nerds (the author included) can have a
+terrible sense of humor.

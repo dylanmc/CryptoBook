@@ -51,7 +51,7 @@ Let's get started
 -----------------
 
 Print out and assemble the "Caesar cipher kit" that comes with the book.
-The Caesar cipher is one of the earlest known ciphers, used by Caesar to
+The Caesar cipher is one of the earliest known ciphers, used by Caesar to
 communicate orders to distant generals. The idea is that if the
 messenger was intercepted by foes of Caesar, that they wouldn't learn
 any secrets from the message they carried.
@@ -62,7 +62,7 @@ any secrets from the message they carried.
 
    Encrypting "HELLO" with the Caesar cipher. Key is A\ :math:`\leftrightarrow`\ D
 
-Follow the instructions on the kit to decode the following punchlines:
+Follow the instructions on the kit to decode the following punch-lines:
 
 I wondered why the ball was getting bigger ... (Use the key:
 J\ :math:`\leftrightarrow`\ M)
@@ -79,7 +79,7 @@ A backward poet ... (Key: H\ :math:`\leftrightarrow`\ H)
 ``SXGVKW GBTKXWK``
 
 If you managed to decrypt all three of these, congratulations - that's a
-lot of work! When I use a Caesar's cipher wheel, it takes about 3
+lot of work! When I use a Caesar cipher wheel, it takes about 3
 seconds per letter to encrypt or decrypt a message. At that rate, it
 would take about an hour to encrypt a whole page of text, which is way
 too long.
@@ -111,14 +111,14 @@ Things to ponder
     guessing the right one.
 
 3. how much more secure would it be to have weird symbols (Greek letters
-   or Egyption heiroglyphics), instead of letters, for the cyphertext in
-   a Caesar's cipher? Explain your answer.
+   or Egyptian hieroglyphics), instead of letters, for the ciphertext in
+   a Caesar cipher? Explain your answer.
 
 .. index:: ! key distribution
 4. *key distribution* is the challenge of getting the secret key to your
    friend. One way to distribute a key would be to include it in some
    hidden way in the message. Come up with a few ways you could do this
-   with the Ceasar Cipher. Another way would be to agree on a shared key
+   with the Caesar Cipher. Another way would be to agree on a shared key
    when in the same room as your friend. What are some of the advantages
    and disadvantages of these two approaches?
 

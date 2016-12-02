@@ -21,12 +21,12 @@ Installing and running Cryptol on your computer
 
 How exactly to install and run Cryptol depends on whether your computer
 is running MacOS, Windows or Linux. Instructions for all three are
-provided on the Cryptol website, which is ``http://cryptol.org``
+provided on the Cryptol web site, which is ``http://cryptol.org``
 
 You're ready to go with the rest of the chapter (and book) if you can
 run Cryptol, and follow along with the session below.
 
-.. (stick this back in once I've written a Crytpol-Console pygment)
+.. (stick this back in once I've written a Cryptol-Console pygment)
    In the examples below, **``what you type will be in bold``**, and
    ``what the computer types will be in non-bold (like this)``.
 
@@ -57,7 +57,7 @@ Types of data in Cryptol
 
 .. index:: type
 One of Cryptol's main features is that it is very careful about how data
-is represented. How data is layed out in bits is an example of a *type* in
+is represented. How data is laid out in bits is an example of a *type* in
 Cryptol. When you're talking about the type of something, often you'll
 see the thing, a colon (:) and then a description of its type
 
@@ -439,7 +439,7 @@ whatever. They do all have to be the same thing, though.
 Implementing the Caesar cipher in Cryptol
 -----------------------------------------
 
-Using what you've learned so far, let's implement the Ceasar cipher in
+Using what you've learned so far, let's implement the Caesar cipher in
 Cryptol. Let's start by breaking down the process of encrypting and
 decrypting data using the Caesar cipher.
 
@@ -452,7 +452,7 @@ declaration probably looks something like:
 Let's talk about how we can represent the key. In Chapter 1, we talked
 about the key being something like K\ :math:`\leftrightarrow`\ D, but
 that's hard to represent mathematically. If we straighten out our Caesar
-Cihper wheels into a line, it looks something like this:
+Cipher wheels into a line, it looks something like this:
 
 ::
 
@@ -478,7 +478,7 @@ This corresponds to the ``A``\ :math:`\leftrightarrow`\ ``D`` key in the
 the paper Caesar cipher.
 
 At this point we'd *like to use* the index operator (``@``) to get the
-cyphertext from the inner wheel that corresponds to the plaintext on the
+ciphertext from the inner wheel that corresponds to the plaintext on the
 outer wheel. The indexing operator needs to be a number, not a letter.
 For the index operator to do what we want, plaintext 'a' should be '0',
 'b' should be '1', all the way up to 'z' should be 25. Let's pause to

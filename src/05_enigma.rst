@@ -31,7 +31,7 @@ the modern computer, and artificial intelligence.
 
 In this chapter you will learn how to use a cardboard model of the
 Enigma that works exactly like the original. Then, step by step, we'll
-implement the Enigma in Crytpol, and use it to encode and decode
+implement the Enigma in Cryptol, and use it to encode and decode
 messages.
 
 .. finally, we'll use Cryptol's advanced features to break the enigma code.
@@ -58,7 +58,7 @@ lights up letters in the area above the keyboard. As you type the
 message, a partner writes down the sequences of lit-up letters. This
 is the encrypted message. As you type, the rotors change positions, so
 if you want to immediately decode the message, you'll need to reset
-the rotor, then you start typing in the cyphertext. If things are
+the rotor, then you start typing in the ciphertext. If things are
 working right, the plaintext of your message will show up in the
 lights.
 
@@ -92,7 +92,7 @@ the next higher letter in the alphabet is between the grey bars.
 Using this one-rotor setup, set the key to A, and decode the following
 message:
 
-..
+.. code-block:: console
 
   Y M X O V P E
 
@@ -107,7 +107,7 @@ Implementing Enigma rotors in Cryptol
 Now let's write that in Cryptol.
 
 If you think about what the Rotor does, it takes a letter as input,
-and produces a different letter as output. If you put the Rotor's A
+and produces a different letter as output. If you put the rotor's A
 between the grey bars, you can trace out what each letter gets
 transformed to. For example, A from the I/O band goes up to E, and B
 goes to K.
@@ -139,7 +139,7 @@ Note that the rotor's function is not *self-inverting.* What this means
 is that if ``C`` goes to ``M``, ``M`` does not go to ``C`` (in this case, it goes to
 ``O``.
 
-Implementing the reflector in Crypol
+Implementing the reflector in Cryptol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now let's look at the Reflector. In this case what the reflector does *is*
@@ -170,14 +170,14 @@ the index operator:
 Here we see that the reflector transforms ``C`` to ``U``, and because
 it's self-inverting, ``U`` transforms to ``C``.
 
-Running the reflector backwards
+Running the rotor backwards
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Finally, we need to consider that the lines you trace go first from
-right-to-left, go through the reflector, and then go left-to-right. So
-looking at Rotor I again, if you start at the letters on the left side
-of the ring, and trace them to the I/O band, they with A goes to U, B
-goes to W, and so on.
+right-to-left, go through the reflector, and then back through the
+rotor go left-to-right. So looking at Rotor I again, if you start at
+the letters on the left side of the ring, and trace them to the I/O
+band, they start with ``A`` goes to ``U``, ``B`` goes to ``W``, and so on.
 
 We could go through, one by one, and produce another string that
 represents the backwards transformation. However, we have the
@@ -191,10 +191,11 @@ this:
               ^- shows E -> A     ^- shows A -> U
 
 If we look at the letters in the ``rotorI`` string, we see that it
-tells us the backwards-mapping too - because E is in the first
-position, that tells us that E -> A. Because K is in the second
-position, we know K -> B. We can automate the process of reversing
-this operation in Cryptol! It's a bit tricky, so we'll go carefully:
+tells us the backwards-mapping too - because ``E`` is in the first
+position, that tells us that ``E`` -> ``A``. Because ``K`` is in the
+second position, we know ``K`` -> ``B``. We can follow this pattern to
+automate the process of reversing this operation in Cryptol! It's a
+bit tricky, so we'll go carefully:
 
 .. code-block:: cryptol
   :linenos:
@@ -219,7 +220,7 @@ that it returns the last item of a sequence called ``candidates``. The
 one). Line 2 says that candidates is a sequence that starts off by
 concatenating the sequence of one element (``[-1]``) with a *sequence
 comprehension* (remember those from Chapter 3?). Each element of the
-sequence is the result of an if statment: if ``c == s`` it's ``i``
+sequence is the result of an if statement: if ``c == s`` it's ``i``
 otherwise it's ``p``. We don't yet know what any of those variables
 (except ``c``) is yet, but fear not: they're defined right below. Line
 3 says that ``s`` *is drawn from the elements of shuffle*. So each
@@ -280,4 +281,13 @@ Save these functions and the definition of ``rotorI``, ``reflectorB`` and
   Assuming a = 7
   "UWYGADFPVZBECKMTHXSLRINQOJ"
 
+Pretty cool, isn't it? We worked hard to write this code to save us the hassle of
+manually tracing the letters backwards. The benefit of doing it this
+way instead of by hand is that we have confidence that the
+backwards version of the rotors is actually correct. A single typo in
+the string would result in an error that would be really hard to track
+down.
 
+.. In a future chapter, we'll learn how to use Cryptol to prove
+   properties about our rotors, such as that they are permutations of the
+   alphabet, and the inverse rotor actually does invert its input.

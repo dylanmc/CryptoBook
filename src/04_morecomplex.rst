@@ -149,7 +149,7 @@ Implementing our next cipher: Vigenère
 
 .. index:: Vigenère cipher
 Given the previous exercise (please actually do it -- it's a lot of fun,
-and very informative), it's probably occured to you that the Caesar
+and very informative), it's probably occurred to you that the Caesar
 cipher leaves a lot of room for improvement. You may have even thought
 of some changes to the Caesar cipher that would make it harder to crack,
 given the tools you've already developed.
