@@ -223,7 +223,7 @@ voltage on a wire is either *high* (representing a 1) or *low*
 (representing 0). What exact voltage corresponds to high and low can
 vary. As systems get faster, the voltages that make a "1" tend to
 decrease. In current Intel CPUs, for example, it's common for a "1" to
-be as low as 1 volt. On older systems, it be as high as 13 volts.
+be as low as 1 volt. On older systems, it can be as high as 13 volts.
 
 .. index:: transistors
 *Transistors* are the building blocks that work with the voltages inside
@@ -244,7 +244,7 @@ zeros, we can explain how text can be represented as sequences of
 numbers, and you can convert those numbers into bits.
 
 It turns out that how to assign numbers to letters is pretty arbitrary.
-Until the early 1960's, there were a number of competing text
+Until the early 1960's there were a number of competing text
 :math:`\rightarrow` bits encoding systems. People realized early on that
 deciding on one system would let them communicate more easily between
 different machines. The most common text encoding, called ASCII, was
@@ -303,7 +303,7 @@ Encoding *all* languages: Unicode
 .. index:: Unicode, UTF-8
 Up until the mid 1990's, computer systems that needed to process
 languages whose characters are not in the ASCII tables each used their
-own encodings. When the Internet and Word Wide Web started to gain
+own encodings. When the Internet and World Wide Web started to gain
 adoption, people realized that they would have to standardize how these
 other languages encoded their alphabets into bits. The Unicode
 Consortium was the group founded to make those standards. They took the

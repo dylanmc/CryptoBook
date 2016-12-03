@@ -84,10 +84,17 @@ Following the directions on the Franklin Heath paper Enigma wiki,
 build the most simple Enigma, which has three paper bands: the
 Input/Output band, Rotor I, and Reflector B. Make sure to line up the
 gray bar on the Reflector and the I/O band, and tape those bands
-stationary, while allowing the Rotor to move. The key in this Simple
+stationary, while allowing the rotor to move. The key in this Simple
 Enigma is the letter between the gray bars when you start. Before
 decoding each character, slide the rotor toward you one position, so
 the next higher letter in the alphabet is between the grey bars.
+
+.. figure:: figures/OneRotorPaperEnigma.jpg
+   :alt: Paper Enigma with one rotor
+   :figclass: align-center
+   :scale: 60%
+
+   Paper Enigma with one rotor
 
 Using this one-rotor setup, set the key to A, and decode the following
 message:
@@ -106,7 +113,7 @@ Implementing Enigma rotors in Cryptol
 
 Now let's write that in Cryptol.
 
-If you think about what the Rotor does, it takes a letter as input,
+If you think about what the rotor does, it takes a letter as input,
 and produces a different letter as output. If you put the rotor's A
 between the grey bars, you can trace out what each letter gets
 transformed to. For example, A from the I/O band goes up to E, and B
@@ -181,7 +188,7 @@ band, they start with ``A`` goes to ``U``, ``B`` goes to ``W``, and so on.
 
 We could go through, one by one, and produce another string that
 represents the backwards transformation. However, we have the
-information we want already in the previous Rotor I string. Look at
+information we want already in the previous RotorI string. Look at
 this:
 
 .. code-block:: console
@@ -228,7 +235,7 @@ time through the loop, ``s`` is the next element of the shuffle. Line
 4 says that ``p`` is drawn from the elements of the ``candidates``
 sequence. Interesting: We're using the sequence in the definition of
 itself! Just like in Chapter 3, this is an instance of *recursion*.
-Finally, line 5 says that ``i`` is drawn from the list ``[ 0 .. 25 ]``.
+Finally, line 5 says that ``i`` is drawn from the sequence ``[0 .. 25]``.
 
 When this function runs, it builds up the ``candidates`` sequence,
 starting with ``-1``, each element keeps being set to ``p`` (which
@@ -236,7 +243,7 @@ starts out with ``-1``) until the letter from shuffle being examined,
 called ``s`` is equal to ``c``, the letter we're searching for. When
 that happens, the new element of ``candidates`` gets set to ``i``,
 which is the index of the match, because the numbers 0 .. 25 are the
-indexes of the elements of shuffled list.
+indexes of the elements of shuffled sequence.
 
 Here are the values of candidates as it proceeds through the shuffled
 list, with the call ``findIndex 'L' rotorI``:
@@ -266,7 +273,7 @@ Save these functions and the definition of ``rotorI``, ``reflectorB`` and
 
 .. code-block:: console
 
-  $ cryptol cryptol/enigma.cry
+  $ cryptol enigma.cry
                           _        _
      ___ _ __ _   _ _ __ | |_ ___ | |
     / __| '__| | | | '_ \| __/ _ \| |
@@ -280,7 +287,10 @@ Save these functions and the definition of ``rotorI``, ``reflectorB`` and
   Main> invertShuffle rotorI
   Assuming a = 7
   "UWYGADFPVZBECKMTHXSLRINQOJ"
+  Main> rotorIrev @ asciiToIndex 'C'
+  'Y'
 
+Indeed, going from right-to-left, ``C`` goes to ``Y``.
 Pretty cool, isn't it? We worked hard to write this code to save us the hassle of
 manually tracing the letters backwards. The benefit of doing it this
 way instead of by hand is that we have confidence that the
@@ -291,3 +301,8 @@ down.
 .. In a future chapter, we'll learn how to use Cryptol to prove
    properties about our rotors, such as that they are permutations of the
    alphabet, and the inverse rotor actually does invert its input.
+
+Combining the Rotor and Reflector
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
