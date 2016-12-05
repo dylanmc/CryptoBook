@@ -94,13 +94,13 @@ book.
 Things to ponder
 ----------------
 
-1. notice that the order of the alphabet is reversed on your Caesar
+1. Notice that the order of the alphabet is reversed on your Caesar
    cipher's inner wheel. You may have seen a Caesar cipher whose inner
    wheel and outer wheel go in the same direction.  What attributes do
    each version have? What advantages or disadvantages can you think
    between the two versions?
 
-2. if it took you one minute to try to decrypt a message using a key you
+2. If it took you one minute to try to decrypt a message using a key you
    guessed, how long would it take, on average, to decrypt a Caesar
    cipher message whose key you don't know\ [1]_? If it takes a computer
    1 millisecond try one key on a message, how long, on average, would
@@ -110,12 +110,12 @@ Things to ponder
     safe to guess that, on average, you'll have to try half of them before
     guessing the right one.
 
-3. how much more secure would it be to have weird symbols (Greek letters
+3. How much more secure would it be to have weird symbols (Greek letters
    or Egyptian hieroglyphics), instead of letters, for the ciphertext in
    a Caesar cipher? Explain your answer.
 
 .. index:: ! key distribution
-4. *key distribution* is the challenge of getting the secret key to your
+4. *Key distribution* is the challenge of getting the secret key to your
    friend. One way to distribute a key would be to include it in some
    hidden way in the message. Come up with a few ways you could do this
    with the Caesar Cipher. Another way would be to agree on a shared key
