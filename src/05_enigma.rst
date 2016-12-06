@@ -99,9 +99,9 @@ the next higher letter in the alphabet is between the grey bars.
 Using this one-rotor setup, set the key to A, and decode the following
 message:
 
-.. code-block:: console
+.. 
 
-  Y M X O V P E
+  ``Y M X O V P E``
 
 The result should be two English words\ [#]_.
 

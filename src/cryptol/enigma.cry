@@ -1,12 +1,27 @@
+type Rotor = [26]([8], Bit)
 alphabet   = [ 'A' .. 'Z' ]
+            //ABCDEFGHIJKLMNOPQRSTUVWXYZ
 rotorI     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT" // permutation with rotor set to A
+
+extractReflectorOffsets reflector = [ (26 + r - c) % 26 | c <- alphabet | r <- reflector ]
+
+reflectorBo = extractReflectorOffsets reflectorB
+
+doReflector r c = c' where
+  i = asciiToIndex c
+  i' = (i + r@i) % 26
+  c' = indexToAscii i'
 
 asciiToIndex c = c - 'A'
+indexToAscii i = i + 'A'
 
-doRotor rotor c = rotor @ (asciiToIndex c)
+doRotorFwd rotor c = rotor @ (asciiToIndex c)
+doRotorBwd rotor c = (invertPermutation rotor) @ (asciiToIndex c)
 
-doTwoRotors rotor reflector c = doRotor rotor (doRotor reflector (doRotor rotor c))
+rotateRotor rotor = rotor >>> 1
+
+doOneRotor rotor rOffsets c = doRotorBwd rotor (doReflector rOffsets (doRotorFwd rotor c))
 
 indexOf c shuffle = candidates ! 0 where
     candidates = [ -1 ] # [ if c == s then i else p
@@ -15,5 +30,18 @@ indexOf c shuffle = candidates ! 0 where
                           | i <- [ 0 .. 25 ]
                           ]
 
-invertShuffle shuffle = [ alphabet @ (indexOf c shuffle)
+invertPermutation shuffle = [ alphabet @ (indexOf c shuffle)
                         | c <- alphabet ]
+
+encryptNoRotate rotor reflector message =
+    [ doOneRotor rotor reflectorBo c | c <- message ]
+
+encryptAndRotate rotor reflOf message =
+    [ doOneRotor (rotor <<< i) (reflOf >>> i) c
+    | c <- message
+    | i <- [1 .. 26]
+    ]
+
+// encryptAndRotate rotorI reflectorBo "YMXOVPE"
+// "GOODJOB"
+

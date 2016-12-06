@@ -14,12 +14,13 @@ and are willing to learn about math and programming along the way.
     * data types
     * sequences, comprehensions
     * functions
- * Classic encryption algorithms
-    * using shared secret keys to communicate in code
-    * additive ciphers - revisiting Caesar [modulo arithmetic]
-    * multiplicitave ciphers [abstract algebra - operations and inverses]
-    * affine ciphers
+ * Implementing the Caesar Cipher in Cryptol
+ * The Enigma
+    * a bit of history
+    * building one with paper
+    * implementing the Enigma in Cryptol
 
 ## Tools used to build the book
 
-I'm planning to write the book in Markdown, and convert to PDF and HTML via Pandoc.
+I'm writing the book in ReStructuredText, and converting to PDF and HTML via Sphinx.
+(I switched from Pandoc/Markdown to make it easier to generate the index, and other improvements)
