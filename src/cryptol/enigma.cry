@@ -1,17 +1,17 @@
-type Rotor = [26]([8], Bit)
 alphabet   = [ 'A' .. 'Z' ]
             //ABCDEFGHIJKLMNOPQRSTUVWXYZ
 rotorI     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
 reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT" // permutation with rotor set to A
 
-extractReflectorOffsets reflector = [ (26 + r - c) % 26 | c <- alphabet | r <- reflector ]
+// extract offsets from permutation
+getReflectorOffsets reflector = [ (26 + r - c) % 26 | c <- alphabet | r <- reflector ]
 
-reflectorBo = extractReflectorOffsets reflectorB
+reflectorBo = getReflectorOffsets reflectorB
 
 doReflector r c = c' where
-  i = asciiToIndex c
-  i' = (i + r@i) % 26
-  c' = indexToAscii i'
+  ci = asciiToIndex c
+  ci' = (ci + r@ci) % 26
+  c' = indexToAscii ci'
 
 asciiToIndex c = c - 'A'
 indexToAscii i = i + 'A'
@@ -36,10 +36,10 @@ invertPermutation shuffle = [ alphabet @ (indexOf c shuffle)
 encryptNoRotate rotor reflector message =
     [ doOneRotor rotor reflectorBo c | c <- message ]
 
-encryptAndRotate rotor reflOf message =
+encryptOneRotor rotor reflOf message =
     [ doOneRotor (rotor <<< i) (reflOf >>> i) c
     | c <- message
-    | i <- [1 .. 26]
+    | i <- [1 .. 100]
     ]
 
 // encryptAndRotate rotorI reflectorBo "YMXOVPE"
