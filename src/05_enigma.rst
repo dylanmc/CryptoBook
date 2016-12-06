@@ -216,6 +216,8 @@ from our initial rotor string with a simple Cryptol function:
                                   | c <- alphabet
                                   | r <- reflector ]
 
+  reflectorBo = getReflectorOffsets reflectorB
+
 
 .. index:: modulo arithmetic
 To understanding what's going on here, we need to revisit *modulo
@@ -249,6 +251,9 @@ Now that we have the offsets array, we can apply the rotor like this:
 
 .. code-block:: cryptol
 
+  // takes a sequence of reflector offsets
+  // and a character, and returns the
+  // transformed character
   doReflector r c = c' where
     ci = asciiToIndex c
     ci' = (ci + r@ci) % 26
@@ -396,7 +401,7 @@ Save these functions and the definition of ``rotorI``, ``reflectorB`` and
   Main> rotorIrev @ asciiToIndex 'C'
   'Y'
 
-Indeed, going from right-to-left, ``C`` goes to ``Y``.
+Indeed, going from left-to-right (backwards), ``C`` goes to ``Y``.
 Pretty cool, isn't it? We worked hard to write this code to save us the hassle of
 manually tracing the letters backwards. The benefit of doing it this
 way instead of by hand is that we have confidence that the
@@ -428,7 +433,7 @@ Here is an implementation of a one-rotor Enigma:
   doOneRotor rotor rOffsets c =
     doRotorBwd rotor (doReflector rOffsets (doRotorFwd rotor c))
 
-  // apply the rotor to each charater in the message,
+  // apply the rotor to each character in the message,
   // first advancing the rotor by 1 each time (and
   // the reflector in the other direction, to keep
   // it motionless
@@ -448,4 +453,5 @@ And now we can test it with the exercise from Section 5.2:
 
 Pretty amazing! One limitation of this implementation is that it can
 only handle messages up to 100 characters long. That, and it's missing
-a number of features from our paper Enigma.
+a few features from our paper Enigma. We'll take care of those in the
+next chapter.

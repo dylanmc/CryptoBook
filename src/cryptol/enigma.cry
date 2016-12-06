@@ -1,6 +1,12 @@
 alphabet   = [ 'A' .. 'Z' ]
             //ABCDEFGHIJKLMNOPQRSTUVWXYZ
 rotorI     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+rotorII    = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
+rotorIII   = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
+notchI     = (1 << asciiToIndex 'Q' ):[26]
+notchII    = (1 << asciiToIndex 'E' ):[26]
+notchIII   = (1 << asciiToIndex 'V' ):[26]
+
 reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT" // permutation with rotor set to A
 
 // extract offsets from permutation
