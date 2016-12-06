@@ -7,7 +7,7 @@ those who don't."*
 Now that you've seen encryption and decryption at work, it's time to
 learn how computers do it. Our Caesar cipher wheel is a paper computer
 which has an alphabet of 26 elements. You've heard (most likely) that
-computers work with ones and zeros. One's and zeros are not very helpful
+computers work with ones and zeros. Ones and zeros are not very helpful
 by themselves, so people figured out how to represent integers, floating
 point numbers and all of the letters in all of the languages around the
 world using only ones and zeros
@@ -81,7 +81,7 @@ In this case we get :math:`512 + 16 + 4 + 1` = 533.
 To convert a number into binary, take the largest digit that isn't
 bigger than your value, and set it to 1, then subtract that digit's
 value from your value and repeat down the line, not forgetting to put in
-0's for the values you don't want to add.
+0s for the values you don't want to add.
 
 Adding binary numbers is super-easy. It's a lot like the addition you're
 used to, with carrying and everything, except simpler. If both places
@@ -168,7 +168,7 @@ Here's :math:`-1 + 3` again, in two's complement:
     ------
       0010
 
-In the one's place, :math:`1+1=0` carry 1, then we have :math:`1+1` +
+In the ones place, :math:`1+1=0` carry 1, then we have :math:`1+1` +
 carry = 1 carry 1, then we have 1 + carry = 0 with carry, and the last
 digit is also 1 + carry = 0 (and the carry goes away). You'll see the
 answer, :math:`0010`\ :sub:`2` = 2, which is what we're hoping for.
@@ -199,11 +199,11 @@ Things to think about
    occurred either before or after the addition has happened.
    Hint: think about the various possible cases separately.
 
-.. index:: one's complement
-4. Two's complement is a slight change from *one's complement*, in which
+.. index:: ones' complement
+4. Two's complement is a slight change from *ones' complement*, in which
    negative numbers just have their bits flipped, but you don't add a 1
    afterwards. A big advantage of two's complement is that there are two
-   ways to write 0 in one's complement: 10000... and 0000....
+   ways to write 0 in ones complement: 10000... and 0000....
    Essentially you have a positive and a negative zero. Think about what
    problems this might cause.
 
@@ -372,13 +372,13 @@ counting to 16 in hexadecimal (or "hex" for short), looks like this:
 
   1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F, 10
 
-Hex, just like decimal and binary, has a *one's place*, but the next
-bigger digit in hex is the *sixteen's place*\ [#]_, so 10 in hex is 16
+Hex, just like decimal and binary, has a *ones place*, but the next
+bigger digit in hex is the *sixteens place*\ [#]_, so 10 in hex is 16
 in decimal (also written as 10\ :sub:`16` == 16\ :sub:`10`). A in hex is
 10 in decimal. This means that one hex digit holds exactly four bits,
 and it takes two hex digits to hold a byte.
 
-.. [#] and the next digit is the 256'ths place!
+.. [#] and the next digit is the 256ths place!
 
 Finally, there are a number of ways of indicating what base a number is
 in. In addition to using the subscript of the base, like spoiling the
@@ -414,7 +414,7 @@ live map with dots in the parts of the world where the characters
 visible on the current screen are used.
 
 Let's look at the UTF-8 for the Bicycle symbol: ``F0 9F 9A B2``. In
-binary the F0 is 11110000. The four 1's let us know that this UTF-8 code
+binary the F0 is 11110000. The four 1s let us know that this UTF-8 code
 has four bytes total (this one and the next 3). The remaining 3 bytes
 are:
 
