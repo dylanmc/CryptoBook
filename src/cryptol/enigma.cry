@@ -29,6 +29,14 @@ rotateRotor rotor = rotor >>> 1
 
 doOneRotor rotor rOffsets c = doRotorBwd rotor (doReflector rOffsets (doRotorFwd rotor c))
 
+doTwoRotors rotor1 rotor2 rOffsets c =
+    doRotorBwd rotor1 (doRotorBwd rotor2 (doReflector rOffsets
+        (doRotorFwd rotor1 (doRotorFwd rotor2 c))))
+
+doThreeRotors r1 r2 r3 rOffsets c =
+    doRotorBwd r1 (doRotorBwd r2 (doRotorBwd r3 (doReflector rOffsets
+        (doRotorFwd r1 (doRotorFwd r2 (doRotorFwd r3 c))))))
+
 indexOf c shuffle = candidates ! 0 where
     candidates = [ -1 ] # [ if c == s then i else p
                           | s <- shuffle
@@ -44,6 +52,18 @@ encryptNoRotate rotor reflector message =
 
 encryptOneRotor rotor reflOf message =
     [ doOneRotor (rotor <<< i) (reflOf >>> i) c
+    | c <- message
+    | i <- [1 .. 100]
+    ]
+
+encryptTwoRotors rotor1 rotor2 reflOf message =
+    [ doTwoRotors (rotor1 <<< i) (rotor2 <<< i) (reflOf >>> i) c
+    | c <- message
+    | i <- [1 .. 100]
+    ]
+
+encryptThreeRotors r1 r2 r3 reflOf message =
+    [ doThreeRotors (r1 <<< i) (r2 <<< i) (r3 <<< i) (reflOf >>> i) c
     | c <- message
     | i <- [1 .. 100]
     ]
