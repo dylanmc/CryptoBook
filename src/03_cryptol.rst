@@ -330,7 +330,7 @@ you're familiar with are infix operators, like: :math:`5 + 2 - 3`.
    single: arguments
    single: parameters
    single: arguments vs. parameters
-***Arguments vs. parameters***: when we talk about defining and calling
+**Arguments vs. parameters**: when we talk about defining and calling
 functions, we've talked about both *arguments* and *parameters*, so you
 may wonder "what's the difference?" The answer is that *parameters are
 in a function's definition*, and *arguments are what you pass to a
@@ -576,8 +576,8 @@ Let's try encrypting something new:
 
    [warning] at <interactive>:1:1--1:30:
      Defaulting type parameter 'bits'
-                  of literal or demoted expression
-                               at <interactive>:1:8--1:9
+      of literal or demoted expression
+         at <interactive>:1:8--1:9
      to 3
      Assuming a = 7
 
@@ -610,18 +610,16 @@ Recall from Chapter 2's discussion about ASCII's clever design, that
 there's a simple way to convert between upper and lower case. Here are
 the Hex values of the ASCII codes for ``a``, ``A``, ``z`` and ``Z``
 
-::
-
-  +-------------+--------+--------+--------+--------+
-  | Character   | A      | Z      | a      | z      |
-  +-------------+--------+--------+--------+--------+
-  | Hex ASCII   | 0x41   | 0x5a   | 0x61   | 0x7a   |
-  +-------------+--------+--------+--------+--------+
+  +-----------+-------+-------+-------+-------+
+  | Character | A     | a     | Z     | z     |
+  +-----------+-------+-------+-------+-------+
+  | Hex ASCII | 0x41  | 0x61  | 0x5a  | 0x7a  |
+  +-----------+-------+-------+-------+-------+
 
 .. index:: conditional statements
 Hey, the difference between the upper and lower case values is exactly
 0x20! If we want everything in lower case (WHO LIKES SHOUTING, REALLY?),
-if a character is lower than 0x61, we can add 0x20 to make it upper
+if a character's ASCII value is less than 0x61, we can add 0x20 to make it lower
 case. We use *conditional statements* to do that in Cryptol:
 
 .. code-block:: console

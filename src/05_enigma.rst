@@ -192,7 +192,7 @@ In one version, the reflector was fixed to the rotor next to it, and
 rotated along with it. In that version, we're done. Most of the
 historical Enigma messages were encoded with a version in which the
 reflector is stationary as the rotor advances. The next section
-describes how to implement the stationary rotor.
+describes how to implement the stationary reflector.
 
 Implementing a stationary reflector
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

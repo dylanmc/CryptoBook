@@ -1,8 +1,8 @@
 Encoding data into bits
 =======================
 
-*"There are 10 kinds of people in the world: those who know binary and
-those who don't."*
+    *"There are 10 kinds of people in the world: those who know binary and
+    those who don't."*
 
 Now that you've seen encryption and decryption at work, it's time to
 learn how computers do it. Our Caesar cipher wheel is a paper computer

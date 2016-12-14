@@ -13,7 +13,7 @@ lacks:
 
 #) the ways the rotors step,
 
-#) the "rings" that adjust *when* the rotors step, and
+#) the "rings" that control *when* the rotors step, and
 
 #) the plugboard, which modifies the I/O ring
 
@@ -30,11 +30,12 @@ As a starting point, what I get when I did this:
 
 .. code-block:: console
 
-  rotorII = "AJD ..."
-  rotorIII = "BDF ..."
+   rotorII  = "AJD ..."
+   rotorIII = "BDF ..."
 
 Once you complete the rotor strings, the next job is to combine them
 in the encryption function.
+
 Stepping the rotors
 -------------------
 
