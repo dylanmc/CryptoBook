@@ -71,3 +71,22 @@ encryptThreeRotors r1 r2 r3 reflOf message =
 // encryptAndRotate rotorI reflectorBo "YMXOVPE"
 // "GOODJOB"
 
+getRotations : [3][26] -> ([3][26], [3][2])
+getRotations pins = ([lpin', mpin'', rpin'], [lcount', mcount', rcount']) where
+    lpin = pins@0
+    mpin = pins@1
+    rpin = pins@2
+    lcount = if mpin!0 then 1 else 0
+    mcount = if rpin!0 then 1 else 0
+    rcount = 1
+    mpin' = mpin <<< 1
+    doubleStep = if mpin'!0 then 1 else 0
+    lcount' = lcount + doubleStep
+    mcount' = mcount + doubleStep
+    rcount' = rcount + doubleStep
+    mpin'' = mpin <<< doubleStep
+    lpin' = lpin <<< lcount'
+    rpin' = rpin <<< rcount'
+
+
+testRotations = [([2,1,1], zero)] # [ getRotations p.0 | p <- testRotations ]
