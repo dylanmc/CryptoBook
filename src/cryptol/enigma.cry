@@ -7,6 +7,13 @@ notchI     = (1 << asciiToIndex 'Q' ):[26]
 notchII    = (1 << asciiToIndex 'E' ):[26]
 notchIII   = (1 << asciiToIndex 'V' ):[26]
 
+type Char  = [8]
+type Rotor = [26](Char,Bit)
+type ThreeRotors = [3]Rotor
+
+advanceRotor : Rotor -> Bit -> Rotor
+advanceRotor r b = if b then r >>> 1 else r
+
 reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT" // permutation with rotor set to A
 
 // extract offsets from permutation

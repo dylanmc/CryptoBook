@@ -236,6 +236,10 @@ just deal with "high" voltages and "low" voltages. Taking this approach
 has allowed us to create computers that can switch many *billions of
 times per second*.
 
+.. Comment - There was a ternary computer built in Russia. That it
+   didn't have any follow-ons backs up the thesis of this section.
+   http://hackaday.com/2016/12/16/building-the-first-ternary-microprocessor/
+
 Encoding text into ones and zeros
 ---------------------------------
 
