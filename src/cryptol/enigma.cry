@@ -43,9 +43,27 @@ type Offset      = [7]
 type Rotor       = [26](Offset,Offset,Bit) // fwd, bwd, pin
 type Pins        = [26]Bit
 type OffsetPerm  = [26]Offset
+type CharPerm    = [26]Char
 type Reflector   = [26]Offset
 type ThreeRotors = [3]Rotor
 type Offsets n   = [n]Offset
+type Swaps n = [n][2][8]
+
+buildPlugboard : {n} (fin n, width n >= 1) => Swaps n -> [26][8] -> [width n] -> CharPerm
+buildPlugboard swaps permutation i =
+    if i >= width swaps
+        then permutation
+        else buildPlugboard swaps swappedPerm (i + 1) where
+            swappedPerm = doSwap (swaps@i) permutation
+
+// cryptol wibble: without parens above, got weird error
+
+doSwap : [2][8] -> [26][8] -> [26][8]
+doSwap [c, d] perm = perm2 where
+    indexOfC = indexOf c perm
+    indexOfD = indexOf d perm
+    perm1 = [ if i == indexOfC then d else x | x <- perm | i <- [0..25]]
+    perm2 = [ if i == indexOfD then c else x | x <- perm1 | i <- [0..25]]
 
 pinsI, pinsII, pinsIII, zeroPins : Pins
 zeroPins = 0
@@ -66,24 +84,30 @@ buildRotor fwd bwd bs = [ ( of, ob, b )
 
 type EnigmaState = {
     rotors    : ThreeRotors,
-    reflector : Reflector
-    // plugboard
+    reflector : Reflector,
+    plugboard : CharPerm
     // rings?
     }
 
-buildEnigmaState : [3]OffsetPerm -> [3]OffsetPerm -> [3]Pins -> Reflector -> EnigmaState
-buildEnigmaState fwdOffs bwdOffs pins refl =
-    { rotors = rs, reflector = refl } where
+buildEnigmaState : [3]OffsetPerm -> [3]OffsetPerm -> [3]Pins ->
+    Reflector -> CharPerm -> EnigmaState
+buildEnigmaState fwdOffs bwdOffs pins refl plug =
+    { rotors = rs, reflector = refl, plugboard = plug } where
     rs = [ buildRotor f b p
          | f <- fwdOffs
          | b <- bwdOffs
          | p <- pins
          ]
 
+// plugboard from FranklinHeath wiki:
+testPlugboard = buildPlugboard
+    ["AP","BR","CM","FZ","GJ","IL","NT","QS","WX"] alphabet 0
+
 testEnigmaState = buildEnigmaState [ rotorIoff, rotorIIoff, rotorIIIoff ]
                                    [ rotorIoffBwd, rotorIIoffBwd, rotorIIIoffBwd ]
                                    [ pinsI, pinsII, pinsIII ]
                                    reflectorBoff
+                                   testPlugboard
 
 getPins : ThreeRotors -> [3]Bit
 getPins rs = [ ((rs@0)@0).2, ((rs@1)@0).2, ((rs@2)@0).2 ]
@@ -112,7 +136,7 @@ advanceRotor : Rotor -> Bit -> Rotor
 advanceRotor r b = if b then r <<< 1 else r
 
 advanceRotors : EnigmaState -> EnigmaState
-advanceRotors es = { rotors = newrs, reflector = newrefl } where
+advanceRotors es = { rotors = newrs, reflector = newrefl, plugboard = es.plugboard} where
     newrs = [ advanceRotor r b
             | r <- es.rotors
             | b <- rbits
@@ -178,6 +202,9 @@ doThreeRotors r1 r2 r3 refl c =
         refl
         (doRotorFwd r3 c))
 
+doPlugboard : CharPerm -> Char -> Char
+doPlugboard plugPerm c = plugPerm@(charToOffset c)
+
 doEnigma : {n} (fin n) => EnigmaState -> String n -> String n
 doEnigma es message =
     [ enigmaStep estate inChar
@@ -186,9 +213,9 @@ doEnigma es message =
     ]
 
 enigmaStep : EnigmaState -> Char -> Char
-enigmaStep es inC = offsetToChar eno where
+enigmaStep es inC = doPlugboard es.plugboard (offsetToChar eno) where
     eno = doThreeRotors (es.rotors@0) (es.rotors@1) (es.rotors@2)
-                  es.reflector (charToOffset inC)
+                  es.reflector (charToOffset (doPlugboard es.plugboard inC))
 
 // Cryptol wibble: without outer parens above, get awful error
 
