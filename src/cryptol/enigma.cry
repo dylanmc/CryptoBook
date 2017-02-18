@@ -3,97 +3,196 @@ alphabet   = [ 'A' .. 'Z' ]
 rotorI     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
 rotorII    = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
 rotorIII   = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
+reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT" // permutation with rotor set to A
+
 notchI     = (1 << asciiToIndex 'Q' ):[26]
 notchII    = (1 << asciiToIndex 'E' ):[26]
 notchIII   = (1 << asciiToIndex 'V' ):[26]
 
-type Char  = [8]
-type Rotor = [26](Char,Bit)
+offsetToChar : Offset -> Char
+offsetToChar o = 'A' + (zero # o)
+charToOffset : Char -> Offset
+charToOffset c = drop`{1}(c - 'A')
+
+// extract offsets from character permutation
+// stringToOffsets : {n} (fin n) => String n -> Offsets n
+stringToOffsets : String 26 -> Offsets 26
+stringToOffsets reflector = [ drop`{1}((26 + r - c) % 26) | c <- alphabet | r <- reflector ]
+
+reflectorBoff = stringToOffsets reflectorB
+
+rotorIoff, rotorIIoff, rotorIIIoff : Offsets 26
+rotorIoff   = stringToOffsets rotorI
+rotorIIoff  = stringToOffsets rotorII
+rotorIIIoff = stringToOffsets rotorIII
+
+rotorIbwd = invertPermutation rotorI
+rotorIIbwd = invertPermutation rotorII
+rotorIIIbwd = invertPermutation rotorIII
+
+rotorIoffBwd = stringToOffsets rotorIbwd
+rotorIIoffBwd = stringToOffsets rotorIIbwd
+rotorIIIoffBwd = stringToOffsets rotorIIIbwd
+
+sum ls = sums!0 where sums= [0] # [ (p + n) % 26 | p <- ls | n <- sums ]
+// sum reflectorBoff == 0
+// theorem: sum of any permutation offsets = 0?
+
+type Char        = [8]
+type Offset      = [7]
+type Rotor       = [26](Offset,Offset,Bit) // fwd, bwd, pin
+type Pins        = [26]Bit
+type OffsetPerm  = [26]Offset
+type Reflector   = [26]Offset
 type ThreeRotors = [3]Rotor
+type Offsets n   = [n]Offset
+
+pinsI, pinsII, pinsIII, zeroPins : Pins
+zeroPins = 0
+
+setBit : {a, b} (fin a, fin b, b >= 1) => [a] -> [b] -> [b]
+setBit b n = n || ((1 >>> 1) >> b)
+
+pinsI   = setBit (indexOf 'Q' alphabet) zeroPins
+pinsII  = setBit (indexOf 'E' alphabet) zeroPins
+pinsIII = setBit (indexOf 'V' alphabet) zeroPins
+
+buildRotor : OffsetPerm -> OffsetPerm -> Pins -> Rotor
+buildRotor fwd bwd bs = [ ( of, ob, b )
+                        | of <- fwd
+                        | ob <- bwd
+                        | b <- bs
+                        ]
+
+type EnigmaState = {
+    rotors    : ThreeRotors,
+    reflector : Reflector
+    // plugboard
+    // rings?
+    }
+
+buildEnigmaState : [3]OffsetPerm -> [3]OffsetPerm -> [3]Pins -> Reflector -> EnigmaState
+buildEnigmaState fwdOffs bwdOffs pins refl =
+    { rotors = rs, reflector = refl } where
+    rs = [ buildRotor f b p
+         | f <- fwdOffs
+         | b <- bwdOffs
+         | p <- pins
+         ]
+
+testEnigmaState = buildEnigmaState [ rotorIoff, rotorIIoff, rotorIIIoff ]
+                                   [ rotorIoffBwd, rotorIIoffBwd, rotorIIIoffBwd ]
+                                   [ pinsI, pinsII, pinsIII ]
+                                   reflectorBoff
+
+getPins : ThreeRotors -> [3]Bit
+getPins rs = [ ((rs@0)@0).2, ((rs@1)@0).2, ((rs@2)@0).2 ]
+// rs@0 is the first rotor (type: [26](Char,Bit)
+// (rs@0)@0 is the first element of the first rotor (type: (Char,Bit)
+// ((rs@0)@0).0 is the character part of that first element (type: Char)
+// ((rs@0)@0).1 is the Pin part of that first element (type: Bit)
+
+// Cryptol wibble: shouldn't need parens above, @ should be
+// left-associate, and >= priority to "."
+
+
+getRotorRotations : ThreeRotors -> ([3]Bit, Bit)
+getRotorRotations rs = ([r1, r2, r3], rf) where
+    pins = getPins rs
+    r1 = pins@1              // only rotate when middle pin set
+    r2 = pins@2 || pins@1    // rotate if middle or right pin set
+    r3 = True                // rightmost rotor always advances
+    rf = reflAttachedToR1 && r1
+
+// some Enigmas, the Reflector is attached to R1, so it rotates along
+// with it. In most, though, the reflector never rotates.
+reflAttachedToR1 = False
 
 advanceRotor : Rotor -> Bit -> Rotor
-advanceRotor r b = if b then r >>> 1 else r
+advanceRotor r b = if b then r <<< 1 else r
 
-reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT" // permutation with rotor set to A
+advanceRotors : EnigmaState -> EnigmaState
+advanceRotors es = { rotors = newrs, reflector = newrefl } where
+    newrs = [ advanceRotor r b
+            | r <- es.rotors
+            | b <- rbits
+            ]
+    (rbits, refbit) = getRotorRotations es.rotors
+    newrefl = if refbit then es.reflector <<< 1 else es.reflector
+        // to model a reflector attached to R1, we rotate the
+        // reflector when R1 does
 
-// extract offsets from permutation
-getReflectorOffsets reflector = [ (26 + r - c) % 26 | c <- alphabet | r <- reflector ]
+rotorSequence es = sequence where
+    sequence = [es] # [ advanceRotors ies | ies <- sequence ]
 
-reflectorBo = getReflectorOffsets reflectorB
+// The double-step happens here:
+// > drop`{99}(rotorSequence testEnigmaState.rotors)
 
-doReflector r c = c' where
-  ci = asciiToIndex c
-  ci' = (ci + r@ci) % 26
-  c' = indexToAscii ci'
+
+
+doReflector : Reflector -> Offset -> Offset
+doReflector r o = (o + r@o) % 26
 
 asciiToIndex c = c - 'A'
 indexToAscii i = i + 'A'
 
-doRotorFwd rotor c = rotor @ (asciiToIndex c)
-doRotorBwd rotor c = (invertPermutation rotor) @ (asciiToIndex c)
+doRotorFwd, doRotorBwd : Rotor -> Offset -> Offset
+doRotorFwd rotor o = (o + (rotor @ o).0) % 26
+doRotorBwd rotor o = (o + (rotor @ o).1) % 26
 
-rotateRotor rotor = rotor >>> 1
+doOneRotor : Rotor -> Reflector -> Offset -> Offset
+doOneRotor rotor rOffsets o = doRotorBwd rotor (doReflector rOffsets (doRotorFwd rotor o))
 
-doOneRotor rotor rOffsets c = doRotorBwd rotor (doReflector rOffsets (doRotorFwd rotor c))
-
-doTwoRotors rotor1 rotor2 rOffsets c =
-    doRotorBwd rotor1 (doRotorBwd rotor2 (doReflector rOffsets
-        (doRotorFwd rotor1 (doRotorFwd rotor2 c))))
-
-doThreeRotors r1 r2 r3 rOffsets c =
-    doRotorBwd r1 (doRotorBwd r2 (doRotorBwd r3 (doReflector rOffsets
-        (doRotorFwd r1 (doRotorFwd r2 (doRotorFwd r3 c))))))
-
-indexOf c shuffle = candidates ! 0 where
-    candidates = [ -1 ] # [ if c == s then i else p
-                          | s <- shuffle
-                          | p <- candidates
+indexOf c chars = candidates ! 0 where
+    candidates = [ -1 ] # [ if c == s then i else prev
+                          | s <- chars
+                          | prev <- candidates
                           | i <- [ 0 .. 25 ]
                           ]
 
-invertPermutation shuffle = [ alphabet @ (indexOf c shuffle)
-                        | c <- alphabet ]
+invertPermutation : [26]Char -> [26]Char
+invertPermutation permutation = [ alphabet @ (indexOf c permutation)
+                                | c <- alphabet ]
 
-encryptNoRotate rotor reflector message =
-    [ doOneRotor rotor reflectorBo c | c <- message ]
-
+encryptOneRotor : {n} (fin n) => Rotor -> Reflector -> String n -> String n
 encryptOneRotor rotor reflOf message =
-    [ doOneRotor (rotor <<< i) (reflOf >>> i) c
+    [ offsetToChar (doOneRotor (rotor <<< i) reflOf (charToOffset c))
     | c <- message
-    | i <- [1 .. 100]
+    | i <- [1 .. n+1]
     ]
 
-encryptTwoRotors rotor1 rotor2 reflOf message =
-    [ doTwoRotors (rotor1 <<< i) (rotor2 <<< i) (reflOf >>> i) c
-    | c <- message
-    | i <- [1 .. 100]
+doTwoRotors r1 r2 refl c =
+    doRotorBwd
+      r2
+      (doOneRotor
+        r1
+        refl
+        (doRotorFwd r2 c))
+
+doThreeRotors r1 r2 r3 refl c =
+    doRotorBwd
+      r3
+      (doTwoRotors
+        r1
+        r2
+        refl
+        (doRotorFwd r3 c))
+
+doEnigma : {n} (fin n) => EnigmaState -> String n -> String n
+doEnigma es message =
+    [ enigmaStep estate inChar
+    | estate <- drop`{1}(rotorSequence es)
+    | inChar <- message
     ]
 
-encryptThreeRotors r1 r2 r3 reflOf message =
-    [ doThreeRotors (r1 <<< i) (r2 <<< i) (r3 <<< i) (reflOf >>> i) c
-    | c <- message
-    | i <- [1 .. 100]
-    ]
+enigmaStep : EnigmaState -> Char -> Char
+enigmaStep es inC = offsetToChar eno where
+    eno = doThreeRotors (es.rotors@0) (es.rotors@1) (es.rotors@2)
+                  es.reflector (charToOffset inC)
 
-// encryptAndRotate rotorI reflectorBo "YMXOVPE"
+// Cryptol wibble: without outer parens above, get awful error
+
+// encryptOneRotor (buildRotor rotorI zero) reflectorBoff "YMXOVPE"
 // "GOODJOB"
 
-getRotations : [3][26] -> ([3][26], [3][2])
-getRotations pins = ([lpin', mpin'', rpin'], [lcount', mcount', rcount']) where
-    lpin = pins@0
-    mpin = pins@1
-    rpin = pins@2
-    lcount = if mpin!0 then 1 else 0
-    mcount = if rpin!0 then 1 else 0
-    rcount = 1
-    mpin' = mpin <<< 1
-    doubleStep = if mpin'!0 then 1 else 0
-    lcount' = lcount + doubleStep
-    mcount' = mcount + doubleStep
-    rcount' = rcount + doubleStep
-    mpin'' = mpin <<< doubleStep
-    lpin' = lpin <<< lcount'
-    rpin' = rpin <<< rcount'
 
-
-testRotations = [([2,1,1], zero)] # [ getRotations p.0 | p <- testRotations ]
