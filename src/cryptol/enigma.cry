@@ -38,16 +38,18 @@ sum ls = sums!0 where sums= [0] # [ (p + n) % 26 | p <- ls | n <- sums ]
 // sum reflectorBoff == 0
 // theorem: sum of any permutation offsets = 0?
 
-type Char        = [8]
-type Offset      = [7]
-type Rotor       = [26](Offset,Offset,Bit) // fwd, bwd, pin
-type Pins        = [26]Bit
-type OffsetPerm  = [26]Offset
-type CharPerm    = [26]Char
-type Reflector   = [26]Offset
-type ThreeRotors = [3]Rotor
-type Offsets n   = [n]Offset
-type Swaps n = [n][2][8]
+type Char          = [8]
+type Offset        = [7]
+type Rotor         = [26](Offset,Offset,Bit) // fwd, bwd, pin
+type Pins          = [26]Bit
+type OffsetPerm    = [26]Offset
+type CharPerm      = [26]Char
+type Reflector     = [26]Offset
+type ThreeRotors   = [3]Rotor
+type Offsets n     = [n]Offset
+type Swaps n       = [n][2][8]
+type Rings n       = Offsets n
+type InitialPosn n = Offsets n
 
 buildPlugboard : {n} (fin n, width n >= 1) => Swaps n -> [26][8] -> [width n] -> CharPerm
 buildPlugboard swaps permutation i =
@@ -86,12 +88,12 @@ type EnigmaState = {
     rotors    : ThreeRotors,
     reflector : Reflector,
     plugboard : CharPerm
-    // rings?
     }
 
-buildEnigmaState : [3]OffsetPerm -> [3]OffsetPerm -> [3]Pins ->
+// Basic Enigma state has Rings all at 1, Rotors at "AAA"
+buildBasicState : [3]OffsetPerm -> [3]OffsetPerm -> [3]Pins ->
     Reflector -> CharPerm -> EnigmaState
-buildEnigmaState fwdOffs bwdOffs pins refl plug =
+buildBasicState fwdOffs bwdOffs pins refl plug =
     { rotors = rs, reflector = refl, plugboard = plug } where
     rs = [ buildRotor f b p
          | f <- fwdOffs
@@ -99,15 +101,50 @@ buildEnigmaState fwdOffs bwdOffs pins refl plug =
          | p <- pins
          ]
 
-// plugboard from FranklinHeath wiki:
-testPlugboard = buildPlugboard
-    ["AP","BR","CM","FZ","GJ","IL","NT","QS","WX"] alphabet 0
+buildEnigmaState : [3]OffsetPerm -> [3]OffsetPerm -> [3]Pins ->
+    Reflector -> CharPerm -> Rings 3 -> String 3 -> EnigmaState
+buildEnigmaState fo bo pins refl plug rings key =
+    { rotors = rs,
+      reflector = refl,
+      plugboard = plug } where
+    rs0 = [ buildRotor (f >>> ring) (b >>> ring) p
+          | f <- fo
+          | b <- bo
+          | ring <- rings
+          | p <- pins
+          ]
+    rs = [ r <<< o | r <- rs0 | o <- keyOffs ]
+    keyOffs = [ charToOffset c | c <- key ]
 
-testEnigmaState = buildEnigmaState [ rotorIoff, rotorIIoff, rotorIIIoff ]
+// plugboard from FranklinHeath wiki:
+franklinHeathPlugboard = buildPlugboard
+    ["AP","BR","CM","FZ","GJ","IL","NT","QS","WX"] alphabet 0
+nullPlugboard = alphabet
+
+franklinHeathRings = [9,13,20]  // "JNU"
+
+testEnigmaState = buildBasicState  [ rotorIoff, rotorIIoff, rotorIIIoff ]
                                    [ rotorIoffBwd, rotorIIoffBwd, rotorIIIoffBwd ]
                                    [ pinsI, pinsII, pinsIII ]
                                    reflectorBoff
-                                   testPlugboard
+                                   nullPlugboard
+
+// these settings are in this Enigma Simulator URL
+// http://enigma.louisedade.co.uk/enigma.html?m3;b;b123;AJNU;AXYZ;AP-BR-CM-FZ-GJ-IL-NT-QS-WX
+
+// http://enigma.louisedade.co.uk/enigma.html?m3;b;b123;AJNU;AXYZ
+// QKTPEBZIUK -> GOODRESULT
+franklinHeathState = buildEnigmaState
+                        [ rotorIoff, rotorIIoff, rotorIIIoff ]
+                        [ rotorIoffBwd, rotorIIoffBwd, rotorIIIoffBwd ]
+                        [ pinsI, pinsII, pinsIII ]
+                        reflectorBoff
+                        franklinHeathPlugboard
+                        franklinHeathRings
+                        "VQQ"
+
+// http://enigma.louisedade.co.uk/enigma.html?m3;b;b123;AJNU;AVQQ;AP-BR-CM-FZ-GJ-IL-NT-QS-WX
+// HABHVHLYDFNADZY -> THATAITWELLDVNE - puzzling
 
 getPins : ThreeRotors -> [3]Bit
 getPins rs = [ ((rs@0)@0).2, ((rs@1)@0).2, ((rs@2)@0).2 ]
@@ -151,8 +188,6 @@ rotorSequence es = sequence where
 
 // The double-step happens here:
 // > drop`{99}(rotorSequence testEnigmaState.rotors)
-
-
 
 doReflector : Reflector -> Offset -> Offset
 doReflector r o = (o + r@o) % 26
