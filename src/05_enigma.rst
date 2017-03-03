@@ -12,24 +12,27 @@ The Enigma
    single: World War II
    single: Bletchley Park
 
-*Enigma* was the name of a cryptographic typewriter-like machine that
-was used by Germany before and during World War II.  German military
+*Enigma*\ [#]_was the name of a typewriter-like cryptographic machine that
+was used by Germany before and during World War II. German military
 commanders used the Enigma to encrypt instructions sent by radio to
 their commanders across Europe and the Atlantic ocean. The Allies
 could eavesdrop on the radio transmissions and hear the encrypted
 messages, but without the key used for that day, they couldn't decrypt
-them.  A top-secret team of mathematicians were gathered in Bletchley
-Park, in England, with the task of breaking the Enigma. The team's
-intellectual leader was a young man named Alan Turing.  The story of
+them. A top-secret team of mathematicians were gathered in Bletchley
+Park, England, with the task of breaking the Enigma. The team's
+intellectual leader was a young man named Alan Turing. The story of
 how the Enigma was broken is told pretty well in the movie *The
 Imitation Game*, and even better (but without Benedict Cumberbatch) in
-the book *Alan Turing: The Enigma* by Alan Hodges.  Alan Turing's life
-ended tragically due to how homosexual people were treated. The
-British government issued a formal pardon and apology in 2013.  In
-addition to ending WWII early, Alan Turing is credited with inventing
-the modern computer, and artificial intelligence.
+the book *Alan Turing: The Enigma* by Alan Hodges. Alan Turing's life
+ended tragically due to how homosexual people were treated at the time\ [#]_.
+In addition to ending WWII early, Alan Turing is credited with inventing
+the modern computer and artificial intelligence.
 
-In this chapter you will learn how to use a cardboard model of the
+.. [#] Photo credit, Christie's http://www.christies.com/lotfinder/lot/ enigma-cipher-machine-a-three-rotor-enigma-5370959-details.aspx
+
+.. [#] The British government issued a formal pardon and apology in 2013.
+
+In this chapter you will learn how to build and use a cardboard model of the
 Enigma that works exactly like the original. Then, step by step, we'll
 implement the Enigma in Cryptol, and use it to encode and decode
 messages.
@@ -45,7 +48,7 @@ something with a real Enigma machine.
 
 .. [#] The National Cryptologic Museum is next to Fort Meade, in
    Maryland, where the US National Security Agency is located. It's well worth
-   visiting. It's about halfway between Washington, D.C, and
+   visiting. It's about halfway between Washington D.C, and
    Baltimore.
 
 First, the key is the combination of two things: the *rotor settings*
@@ -66,10 +69,12 @@ Making and using your own Enigma
 ---------------------------------
 
 Franklin Heath, a cybersecurity company in the UK, released an
-excellent cardboard model of the Enigma. It is similar to a
+excellent cardboard model of the Enigma\ [#]_. It is similar to a
 pen-and-paper version of the Enigma designed by Alan Turing while he
 was at Bletchley Park, and can be used to encrypt and decrypt messages
 interchangeably with real Enigma machines.
+
+.. [#] You can download it from ``http://wiki.franklinheath.co.uk/ index.php/Enigma/Paper_Enigma``
 
 The first thing you'll need to assemble your own paper Enigma is a
 tube that has a diameter of 75mm. One source of such tubes is
@@ -101,18 +106,34 @@ message:
 
 ..
 
-  ``Y M X O V P E``
+  ``YMXOVPE``
 
-The result should be two English words\ [#]_.
+I'll walk you through decoding the first letter:
 
-.. [#] If the answer doesn't look right, and starts with ``P``, then
-   you forgot to advance the rotor *before* decoding each letter.
+ #. First, advance the rotor so that ``B`` is between the grey bars.
+
+ #. Next, start at the ``Y`` on the INPUT/OUTPUT ring on the right.
+
+ #. Trace from the ``Y`` along the blue line to the ``J`` on the rotor.
+
+ #. Along the reflector, go from the ``J`` along the blue line up to the
+    ``Q``.
+
+ #. From the ``Q``, follow the red line across and down to the ``G``.
+
+ #. ``G`` is the first decoded character! Now advance the rotor so that
+    ``C`` is between the grey bars, and decode the next letter.
+
+.. GOODJOB is the decoded message
+
+The result should be two English words. If it isn't, make sure you're
+advancing the rotor between each character. When you're done, ``H``
+should be the charater between the grey bars.
 
 Implementing the Enigma in Cryptol
 -----------------------------------
 
-
-The Enigma is considerably more complicated than the Caesar or
+The Enigma is way more complicated than the Caesar or
 Vigenère ciphers. We can't just implement it in one go - instead we
 have to break it up into the various components and test each step as
 we go. We'll start by implementing just the rotor, then the reflector,
@@ -121,197 +142,250 @@ then combine them into a one-rotor Enigma, and so on. Let's go!
 Implementing Enigma rotors in Cryptol
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you think about what the Enigma rotor does, it takes a letter as input
-and produces a different letter as output. If you put the rotor's A
+If you look at what the Enigma rotor does, it takes a letter as input
+and shifts that letter to another location on the cylinder. The figure
+below shows a part of Rotor I. If you put the rotor's ``A``
 between the grey bars, you can trace out what each letter gets
-transformed to. For example, A from the I/O band goes up to E, and B
-goes to K.
+transformed to. For example, ``A`` from the I/O band goes up four
+positions to ``E``, and ``D`` goes up two positions to ``F``.
+Because the rotors rotate\ [#]_, it makes sense to think about the
+rotors in terms of offsets, or *relative* translations instead of
+letters, or *absolute* addresses, like we did with the Caesar
+cipher.
 
-If we want to express this in Cryptol, a sequence of letters
-that are the result of translating ``A`` :math:`\rightarrow` ``Z`` looks like this:
+.. [#]
 
+   Rotors were well-named, weren't they?
 
-.. code-block:: console
+.. figure:: figures/EnigmaOffsetsFwd.pdf
+   :figclass: align-center
+   :scale: 70%
 
-  alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  rotorI   = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+   Tracing rotor offsets in the forward direction.
 
-.. index:: index operator
-To use the rotor encoded like this, all we need is the *index
-operator*, which is ``@``. To transform the letter ``C`` with the
-rotor, we first get the index of ``C`` in the alphabet using
-``asciiToIndex``, then we use that index on the ``rotorI`` sequence,
-like this:
+Already we're now talking about three different kinds of numbers: the
+*ASCII code* for each letter, the *indexes* within the alphabet those
+letters have, and now *offsets*, which is what we're calling the
+distance between two letters. They're all numbers, but they have
+different meanings, and we need to be careful that we don't mix them
+up in the code. Here's an example of each of them:
 
-.. code-block:: console
-
-  Cryptol> let i = asciiToIndex 'C'
-  Cryptol> rotorI@i
-  'M'
-
-If you got a hex result instead, don't forget to ``:set ascii=on``.
-
-.. index:: self-inverting function
-Note that the rotor's function is not *self-inverting.* What this means
-is that if ``C`` goes to ``M``, ``M`` does not go to ``C`` (in this case, it goes to
-``O``.
-
-Implementing the reflector in Cryptol
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Now let's look at the Reflector. In this case what the reflector does *is*
-self-inverting. The reflector connects, for example, A and Y. So A
-input produces Y as output, and Y input produces A as output.
-
-Come up with the Cryptol string that represents the Reflector's
-actions. It should start like this:
-
-.. answer: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-   "YRUHQSLDPXNGOKMIEBFZCWVJAT"
-
-.. code-block:: console
-
-  reflectorB = "YRU // ... you finish the rest
-
-In the initial setting with the rotor's ``A`` between the grey bars, we
-use the reflector exactly the same way we used the rotor. In this
-example, we've placed the call to ``asciiToIndex`` as the argument to
-the index operator:
-
-.. code-block:: console
-
-  Cryptol> reflector @ (asciiToIndex 'C')
-  'U'
-  Cryptol> reflector @ (asciiToIndex 'U')
-  'C'
-
-Here we see that the reflector transforms ``C`` to ``U``, and because
-it's self-inverting, ``U`` transforms to ``C``.
-There were multiple versions of the Enigma through the years.
-In one version, the reflector was fixed to the rotor next to it, and
-rotated along with it. In that version, we're done. Most of the
-historical Enigma messages were encoded with a version in which the
-reflector is stationary as the rotor advances. The next section
-describes how to implement the stationary reflector.
-
-Implementing a stationary reflector
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Set your paper Enigma's rotor so that ``A`` is between the grey bars.
-It's easy to see that ``A`` goes to ``Y``. If you advance the rotor
-one step (so that ``B`` is between the grey bars), now ``B`` goes to
-``Z``. If we look at our reflector string, you'll see that there is no way to
-implement rotor advancement as a string rotation like we did with the
-rotor. Advancing the rotor totally scrambles what the reflector does,
-which is probably why the designers of the Enigma introduced this
-feature.
-
-Instead, we need to think about the elements of the rotor as *offsets*
--- values to add to the input character. We can calculate the offsets
-from our initial rotor string with a simple Cryptol function:
-
-.. code-block:: cryptol
-
-  getReflectorOffsets reflector = [ (26 + r - c) % 26
-                                  | c <- alphabet
-                                  | r <- reflector ]
-
-  reflectorBo = getReflectorOffsets reflectorB
+   +-------+-------+--------+--------------------------------------------+
+   | Char  | ASCII | Index  | Offset from Char :math:`\rightarrow`       |
+   +       +       +        +----------+---------+------+-------+--------+
+   |       |       |        |   ``A``  |  ``B``  | ...  | ``Y`` | ``Z``  |
+   +=======+=======+========+==========+=========+======+=======+========+
+   | ``A`` |  65   |  0     |     0    |   1     |      |  24   |   25   |
+   +-------+-------+--------+----------+---------+------+-------+--------+
+   | ``B`` |  66   |  1     |     25   |   0     |      |  23   |   24   |
+   +-------+-------+--------+----------+---------+------+-------+--------+
+   | ``C`` |  67   |  2     |     24   |   25    |      |  22   |   23   |
+   +-------+-------+--------+----------+---------+------+-------+--------+
+   |                           ...                                       |
+   +-------+-------+--------+----------+---------+------+-------+--------+
+   | ``X`` |  88   |  23    |     3    |   4     |      |   1   |   2    |
+   +-------+-------+--------+----------+---------+------+-------+--------+
+   | ``Y`` |  89   |  24    |     2    |   3     |      |   0   |   1    |
+   +-------+-------+--------+----------+---------+------+-------+--------+
+   | ``Z`` |  90   |  25    |     1    |   2     |      |   25  |   0    |
+   +-------+-------+--------+----------+---------+------+-------+--------+
 
 
-.. index:: modulo arithmetic
-To understanding what's going on here, we need to revisit *modulo
-arithmetic*. In Chapter 4, we mentioned that our 12-hour timekeeping
-system is a common example of modulo arithmetic: the hour past 12 is 1
-again. When mathematicians (and cryptographers) do modulo arithmetic,
-we start with zero instead of one, just like zero-based indexing
-(discussed in Chapter 3).
+The offset representation is how we'll describe what each rotor does
+in the code. To create the offsets for a rotor it's
+convenient to trace the lines on our cardboard Enigma
+and write down which *letter* each line goes to,
+then write a *helper function* to take that representation and turn it
+into the sequence of *offsets* we want.
 
-Since our Enigma has an alphabet with 26 items, that means valid
-indexes go from 0 to 25. Returning to our reflector, if you think
-about what it does as adding offsets, it makes sense to do that
-addition *modulo 26*, so if the addition goes higher than 25, it will
-*wrap around* back to zero, and the index will still be valid. For
-example, with our rotor back in position ``A``, looking at ``Y`` (at
-index 24), you could say the reflector *adds 2, modulo 26*. Adding one
-gets us to 25, then adding another 1 wraps around to 0, which is the
-index of ``A``.
-
-We're ready to understand the Cryptol code above. The first line does
-all the interesting work: it says that each offset is ``(26 + r - c) % 26``.
-``r`` is our reflector value, and ``c`` is the current
-character in ``A .. Z``. Subtracting them gets the offset we're after.
-So why do we add 26? The reason is that Crytpol only supports
-non-negative numbers. So, to make this work, we
-add 26 before subtracting ``c``. Since adding 26 (modulo 26) is the same as
-adding 0, it doesn't change the answer, and keeps things positive
-where we need them.
-
-Now that we have the offsets array, we can apply the rotor like this:
-
-.. code-block:: cryptol
-
-  // takes a sequence of reflector offsets
-  // and a character, and returns the
-  // transformed character
-  doReflector r c = c' where
-    ci = asciiToIndex c
-    ci' = (ci + r@ci) % 26
-    c' = indexToAscii ci'
-
-Get out your paper Enigma, and test it with some inputs:
-
-.. code-block:: console
-
-  % cryptol enigma.cry
-
-                          _        _
-     ___ _ __ _   _ _ __ | |_ ___ | |
-    / __| '__| | | | '_ \| __/ _ \| |
-   | (__| |  | |_| | |_) | || (_) | |
-    \___|_|   \__, | .__/ \__\___/|_|
-              |___/|_|  version 2.4.0
-
-  Loading module Cryptol
-  Loading module Main
-  Main> :set ascii=on
-  Main> doReflector reflectorBo 'A'
-  'Y'
-  Main> doReflector (reflectorBo >>> 1) 'A'
-  'U'
-  Main> doReflector (reflectorBo >>> 1) 'B'
-  'Z'
-
-In the example, we see that ``A`` :math:`\rightarrow` ``Z``, which is
-as expected. Then if we advance the rotor by one, we need to rotate
-the reflector the other direction by one, to compensate for the
-rotor's motion, allowing the reflector to remain fixed. With that
-setting, we see that 
-``A`` :math:`\rightarrow` ``U``, and
-``B`` :math:`\rightarrow` ``Z`` as expected! Check this with your own
-paper Enigma.
-
-Running the rotor backwards
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Finally, we need to consider that the lines you trace go first from
-right-to-left, go through the reflector, and then back through the
-rotor go left-to-right. So looking at Rotor I again, if you start at
-the letters on the left side of the ring, and trace them to the I/O
-band, they start with ``A`` goes to ``U``, ``B`` goes to ``W``, and so on.
-
-We could go through, one by one, and produce another string that
-represents the backwards transformation. However, we have the
-information we want already in the previous RotorI string. Look at
+To express this in Cryptol, we start with by tracing the lines for
+each character in the alphabet. We write them down in the same order,
+so the first character is what the line from ``A`` goes to, which is
+``E``. ``B``'s line goes further up, to ``K``, and so on. In your
+``enigma.cry`` file, create a variable called ``rotorIchars`` like
 this:
 
 .. code-block:: console
 
-  alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  rotorI   = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-              ^- shows E -> A     ^- shows A -> U
+  rotorIchars = "EK ..."
 
-If we look at the letters in the ``rotorI`` string, we see that it
+.. answer rotorIchars   = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+
+Where you fill in the rest of the string.
+
+Our next job is to write a helper function that
+computes each offset. We also choose to represent offsets with a
+different number of bits than characters, so we (and Cryptol)
+can tell them apart from each other. We *could* use 8 bits for
+characters, indexes and offsets, but using different numbers of bits
+for each of them makes it easier for Cryptol to help prevent
+us from getting them confused, by giving us an error when we provide
+one kind of number when a function expects another.
+
+.. code-block:: cryptol
+
+  type Char   = [8] // ASCII characters
+  type Index  = [7] // A -> 0, Z -> 25
+  type Offset = [6] // distance between 2 chars
+
+  alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  rotorIchars = "EK ..." // <- from your line-following
+
+  // some helpers to go from Char to Index and back:
+  indexToChar : Index -> Char
+  indexToChar o = (0b0 # o) + 'A'
+
+  charToIndex : Char -> Index
+  charToIndex c = drop`{1}(c - 'A')
+
+  stringToOffsets : [26]Char -> [26]Offset
+  stringToOffsets chars =
+      [ drop`{2}((c + 26 - a) %26)
+      | c <- chars
+      | a <- alphabet
+      ]
+
+The main tricky bit in this part of the program is that we need to
+avoid negative numbers, because they won't work with Cryptol's modulo
+arithmetic [#]_.  Fortunately, that's easy to do. Let's work through how to
+compute offsets using only positive numbers. First, as we're marching
+through the ``chars`` sequence, the offset between each character
+``c`` and its position in the alphabet ``a`` is ``c - a``. This is a
+positive number when the line goes up on our rotor. For example,
+computing the very first entry, ``'E' - 'A'`` equals 4, just like we'd
+hope.
+
+.. [#] if you type ``-3 % 26`` in Cryptol, you get ``3`` instead of
+       ``23`` like we'd hope. Python gets this right, but C, Java and
+       many other languages get it wrong (they usually say -3).
+       It's always safe to keep things positive like we're doing here.
+
+.. index::
+   single: Modulo arithmetic
+
+However, looking up the rotor at ``G``, we get ``'D' - 'G'``
+which is -3.  How do we fix this? Well, it's always safe to add 0 to
+something -- doing that doesn't change the result, right? In modulo
+arithmetic, there are a *bunch* of numbers whose values are 0. For
+example, ``26 % 26`` is ``0``, and so is ``52 % 26``. So if we add
+``26`` to our element of ``chars`` before subtracting, that's the same
+as adding zero, and we also know that the result will be positive.
+
+So, our final expression for computing the offset from our array is
+``c + 26 - a``. We do ``drop`{2}`` of that to take the 8 bit number
+and drop the two leading ``0``'s from it. Think about whether it's
+always safe to assume there will be at least two leading ``0``'s in
+this number.
+
+To test your function, try loading your program and running it, like
+this:
+
+.. code-block:: console
+
+    % cryptol enigma.cry
+    ... (Cryptol talking to you)
+    Main> :set base=10
+    Main> stringToOffsets rotorIchars
+    [4, 9, 10, 2, 7, 1, 23, ... ]
+
+If you get a different sequence of numbers, first decide if you agree
+with the offsets above, and if you do, figure out why your function
+doesn't do the same thing.
+
+Exercise: write ``applyOffsetToIndex``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To apply an offset to an index *i*, we follow this recipe: first, look
+up the offset in the offset sequence, using the ``@ i`` indexing
+operator. Then we add the result to ``i`` and apply ``% 26`` to get the new index.
+
+Write a function called ``applyOffsetToIndex`` that has the following
+type:
+
+.. code-block:: console
+
+    applyOffsetToIndex : [26]Offset -> Index -> Index
+    applyOffsetToIndex offsets i = <fill this in...>
+
+
+Implementing the reflector in Cryptol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now let's look at the Reflector. The only thing different between this
+and the rotor is that the lines loop back to the edge they start from.
+
+.. figure:: figures/ReflectorOffsets.pdf
+   :figclass: align-center
+   :scale: 40%
+
+   A portion of Reflector B.
+
+Here, we see that ``I`` goes to ``P``, ``K`` goes to ``N`` and so on.
+Just as we did for the rotor, follow the lines and come up with the
+Cryptol string that represents the Reflector's actions. It should
+start like this:
+
+.. code-block:: console
+
+  reflectorBchars = "YRU // ... finish the rest
+
+.. answer: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+   ->      "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+
+We can now reuse our code from the rotors to compute the offsets in
+the reflector, like this:
+
+.. code-block:: console
+
+  reflectorBoff = stringToOffsets reflectorBchars
+
+Now test your reflector and your ``applyOffsetToIndex`` function:
+
+.. code-block:: console
+
+    Main> indexToChar (applyOffsetToIndex reflectorBoff (charToIndex 'P'))
+    'I'
+    Main> indexToChar (applyOffsetToIndex reflectorBoff (charToIndex 'O'))
+    'M'
+    Main> indexToChar (applyOffsetToIndex reflectorBoff (charToIndex 'K'))
+    'N'
+
+
+Looking at the figure, indeed ``P`` :math:`\rightarrow` ``I``,
+``O`` :math:`\rightarrow` ``M`` and ``K`` :math:`\rightarrow` ``N``.
+Go ahead and test it on ``A``, ``B`` and ``C`` and compare it with
+your Enigma to increase your confidence.
+
+Going reverse through the rotor
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. index::
+   single: self-inverting function
+
+Because of the way the reflector works, if ``I`` :math:`\rightarrow`
+``P``, we know the reverse is also true: ``P`` :math:`\rightarrow`
+``I``. This kind of transformation is called a *self-inverting
+function*. You may have already noticed that the rotors are *not*
+self-inverting. Looking at Rotor I, going in the forward direction,
+``A`` :math:`\rightarrow` ``E``, but going from left-to-right, ``E`` goes off the top of the
+figure to ``L``. So towards the goal of implementing a one-rotor Enigma,
+we're 2/3rds of the way there: we can go forward through the rotor,
+then through the reflector, and now what we need to do is go backwards
+through the rotor. Since the rotor is *not* self-inverting, we'll have
+to compute the backwards function.
+
+We could go through, one by one, and produce another string that
+represents the backwards transformation. However, we already have the
+information we want in the previous ``rotorIchars`` string. Look at
+this:
+
+.. code-block:: console
+
+  alphabet    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  rotorIchars = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+                 ^- shows E -> A     ^- shows A -> U
+
+If we look at the letters in the ``rotorIchars`` string, we see that it
 tells us the backwards-mapping too - because ``E`` is in the first
 position, that tells us that ``E`` :math:`\rightarrow` ``A``. Because ``K`` is in the
 second position, we know ``K`` :math:`\rightarrow` ``B``. We can follow this pattern to
@@ -321,18 +395,20 @@ bit tricky, so we'll go carefully:
 .. code-block:: cryptol
   :linenos:
 
-  indexOf c shuffle = candidates ! 0 where
+  indexOf c permutation = candidates ! 0 where
       candidates = [ -1 ] # [ if c == s then i else p
-                            | s <- shuffle
+                            | s <- permutation
                             | p <- candidates
                             | i <- [ 0 .. 25 ]
                             ]
 
 .. index::
    single: recursion
+   single: permutation
    single: sequence comprehension
+
 The first function we want is one that gives us the index of a
-character in a shuffled string. Line 1 defines our function, and says
+character in a permutation. Line 1 defines our function, and says
 that it returns the last item of a sequence called ``candidates``. The
 ``where`` says we're about to define some variables (in this case only
 one). Line 2 says that candidates is a sequence that starts off by
@@ -341,8 +417,8 @@ comprehension* (remember those from Chapter 3?). Each element of the
 sequence is the result of an if statement: if ``c == s`` it's ``i``
 otherwise it's ``p``. We don't yet know what any of those variables
 (except ``c``) is yet, but fear not: they're defined right below. Line
-3 says that ``s`` *is drawn from the elements of shuffle*. So each
-time through the loop, ``s`` is the next element of the shuffle. Line
+3 says that ``s`` *is drawn from the elements of permutation*. So each
+time through the loop, ``s`` is the next element of the permutation. Line
 4 says that ``p`` is drawn from the elements of the ``candidates``
 sequence. Interesting: We're using the sequence in the definition of
 itself! Just like in Chapter 3, this is an instance of *recursion*.
@@ -350,14 +426,14 @@ Finally, line 5 says that ``i`` is drawn from the sequence ``[0..25]``.
 
 When this function runs, it builds up the ``candidates`` sequence,
 starting with ``-1``, each element keeps being set to ``p`` (which
-starts out with ``-1``) until the letter from shuffle being examined,
+starts out with ``-1``) until the letter from permutation being examined,
 called ``s`` is equal to ``c``, the letter we're searching for. When
 that happens, the new element of ``candidates`` gets set to ``i``,
 which is the index of the match, because the numbers ``0 .. 25`` are the
 indexes of the elements of shuffled sequence.
 
-Here are the values of candidates as it proceeds through the shuffled
-list, with the call ``findIndex 'L' rotorI``:
+Here are the values of candidates as it proceeds through the
+string, with the call ``findIndex 'L' rotorI``:
 
 .. code-block:: console
 
@@ -365,21 +441,19 @@ list, with the call ``findIndex 'L' rotorI``:
    i:           [ 0,  1,  2,  3,  4,  5,  6, .., 25 ]
    candidates = [-1, -1, -1, -1,  4,  4,  4, .., 4  ]
    s:             E   K   M   F   L   G   D  ... J
-                                  ^
-   note:             s == 'L' here|, so the index i
-                     is saved to candidates
-
+   note:          s == 'L' here:  ^   so the index i
+                  (4) is saved to candidates
 
 With this function, we can create the left-to-right version of a rotor
 given its right-to-left version:
 
 .. code-block:: cryptol
 
-  invertShuffle shuffle = [ alphabet @ (indexOf c shuffle)
-                          | c <- alphabet
-                          ]
+  invertPermutation perm = [ indexToChar (indexOf c perm)
+                           | c <- alphabet
+                           ]
 
-Save these functions and the definition of ``rotorI``, ``reflectorB`` and
+Save these functions and the definition of ``rotorIchars``, ``reflectorBchars`` and
 ``alphabet`` to a file called ``enigma.cry``, and run Cryptol on it:
 
 .. code-block:: console
@@ -395,11 +469,13 @@ Save these functions and the definition of ``rotorI``, ``reflectorB`` and
   Loading module Cryptol
   Loading module Main
   Main> :set ascii=on
-  Main> let rotorIrev = invertShuffle rotorI
+  Main> let rotorIrev = invertPermutation rotorIchars
   Assuming a = 7
   "UWYGADFPVZBECKMTHXSLRINQOJ"
   Main> rotorIrev @ asciiToIndex 'C'
   'Y'
+  Main> invertPermutation reflBchars == reflBchars
+  True
 
 Indeed, going from left-to-right (backwards), ``C`` goes to ``Y``.
 Pretty cool, isn't it? We worked hard to write this code to save us the hassle of
@@ -407,47 +483,56 @@ manually tracing the letters backwards. The benefit of doing it this
 way instead of by hand is that we have confidence that the
 backwards version of the rotors is actually correct. A single typo in
 the string would result in an error that would be really hard to track
-down.
+down. Finally, at the end, we tested whether the reflector is
+its own inverse permutation, and indeed it is.
 
 .. In a future chapter, we'll learn how to use Cryptol to prove
    properties about our rotors, such as that they are permutations of the
    alphabet, and the inverse rotor actually does invert its input.
 
-Now we can write functions that go through the rotor forwards and
-backwards:
 
-.. code-block:: cryptol
-
-  doRotorFwd rotor c = rotor @ (asciiToIndex c)
-  doRotorBwd rotor c = (invertShuffle rotor) @ (asciiToIndex c)
+.. aside: add a discussion about permutations/shuffles vs.
+   sequences of random numbers. Key point: invertability
 
 Combining the Rotor and Reflector
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is an implementation of a one-rotor Enigma:
+Now we can combine the functions you've written so far
+into an implementation of a one-rotor Enigma:
 
 .. code-block:: cryptol
 
-  // first go through the rotor forward, then the
-  // reflector, and finally, the rotor backwards:
-  doOneRotor rotor rOffsets c =
-    doRotorBwd rotor (doReflector rOffsets (doRotorFwd rotor c))
+  // encryptOneChar
+  // takes the offsets of a rotor, its inversion, a reflector and a character
+  // and return the encrypted character
+  encryptOneChar : [26]Offset -> [26]Offset -> [26]Offset -> Char -> Char
+  encryptOneChar rotorFwd rotorRev reflector inputChar = outputChar where
+    inputIndex   = charToIndex inputChar
+    rotorI       = applyOffsetToIndex rotorFwd inputIndex
+    reflI        = applyOffsetToIndex reflector rotorI
+    outputIndex  = applyOffsetToIndex rotorRev reflI
+    outputChar   = indexToChar outputIndex
 
-  // apply the rotor to each character in the message,
-  // first advancing the rotor by 1 each time (and
-  // the reflector in the other direction, to keep
-  // it motionless
-  encryptOneRotor rotor reflOf message =
-      [ doOneRotor (rotor <<< i) (reflOf >>> i) c
+  // encryptOneRotor
+  // takes the strings for a rotor and a reflector and message
+  // and encrypts the message one character at a time, first
+  // rotating the rotor each step
+  encryptOneRotor rotor reflector message =
+      [ encryptOneChar (rotorOff <<< i) (rotorRevOff <<< i) reflectorOff c
       | c <- message
       | i <- [1 .. 100]
-      ]
+      ] where
+          rotorOff = stringToOffsets rotor
+          rotorRev = invertPermutation rotor
+          rotorRevOff = stringToOffsets rotorRev
+          reflectorOff = stringToOffsets reflector
+
 
 And now we can test it with the exercise from Section 5.2:
 
 .. code-block:: console
 
-  Main> encryptOneRotor rotorI reflectorBo "YMXOVPE"
+  Main> encryptOneRotor rotorIchars reflBchars "YMXOVPE"
   Assuming a = 7
   "GOODJOB"
 

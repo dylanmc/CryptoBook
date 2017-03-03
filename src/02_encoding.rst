@@ -1,7 +1,7 @@
 Encoding data into bits
 =======================
 
-    *"There are 10 kinds of people in the world: those who know binary and
+    *"There are 10 kinds of people in the world: those who understand binary and
     those who don't."*
 
 Now that you've seen encryption and decryption at work, it's time to

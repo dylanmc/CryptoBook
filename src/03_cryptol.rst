@@ -61,22 +61,26 @@ is represented. How data is laid out in bits is an example of a *type* in
 Cryptol. When you're talking about the type of something, often you'll
 see the thing, a colon (:) and then a description of its type
 
-For example, the type of the hex constant ``0xFAB`` would be written:
+For example, the type of the hex number ``0xFAB`` would be written:
 
 ::
 
-    0xFAB : [12]
+    0xFAB : [12]Bit
 
-You could read the above as "the type of the hex constant ``FAB`` is a
+You could read the above as "the type of the hex number ``FAB`` is a
 sequence of twelve bits." Cryptol can also talk about sequences of
 sequences. For example:
 
 ::
 
-    [ 0xA, 0xB, 0xC, 0xD, 0xE ] : [5][4]
+    [ 0xA, 0xB, 0xC, 0xD, 0xE ] : [5][4]Bit
 
 .. index:: sequence
 I would call this "a sequence of five elements, each having four bits".
+It turns out that the ``Bit`` at the end is optional: if the last
+thing in a type is a length (``[4]`` for example), you are supposed to
+add the ``Bit`` in your understanding of the type.
+
 You can ask Cryptol what the type of something is with the ``:t``
 command, like this:
 
@@ -191,7 +195,7 @@ Defining functions
     single: defining functions
     single: function definition
 In math, *functions* describe a way of creating an *output* from one or
-more *inputs*. Functions in Cryptol are the same thing, and you can give
+more *inputs*. Functions in Cryptol are almost exactly the same, and you can give
 them names if you want. Here's a picture example of a functioned named
 :math:`f`, which takes two *parameters*, :math:`x` and :math:`y` and
 returns their sum:
@@ -218,12 +222,16 @@ One way to define a function is with the ``let`` command, like this:
 What? :math:`4+4=0`? Oh, yeah, Cryptol let us know it was working with 3
 bits, because that's how many you need for 4, but 4+4 is 8 which needs 4
 bits, and the remainder is 0. The quickest way to get Cryptol to work
-with more bits is to use hex and add a leading 0:
+with more bits is to use hex and add a leading 0\ [#]_:
 
 .. code-block:: console
 
   Cryptol> double 0x04
   0x08
+
+.. [#]
+   another way to do this is use decimal numbers, which are friendly,
+   but specify the width of the output, like this: ``4 + 4 :[8]``.
 
 Whew. That's better. Here's a definition of our function :math:`f`,
 which has two parameters:
@@ -492,11 +500,11 @@ we're after. Finally, ``'z'`` - ``'a'`` is 25, so for that range of
 characters, it's good! Here's a simple function that takes an ASCII
 character and returns its index in the alphabet:
 
-::
+.. code-block:: console
 
   Cryptol> let asciiToIndex c = c - 'a'
 
-Using this function to encrypt one letter would look like this:\ [#]_
+Using this function to encrypt one letter would look like this\ [#]_:
 
 .. [#] Some of the examples on this page have backslashes (\\) in them: it's
     because they're on more than one line: if you type the \\, Cryptol
