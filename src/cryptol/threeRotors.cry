@@ -1,0 +1,292 @@
+module Enigma where
+
+// BeginBasicTypes
+type Char     = [8] // ASCII characters
+type Offset   = [6] // A -> 0, .. Z -> 25
+type Index    = [7] // distance between 2 chars
+
+alphabet        = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+// rotorIchars  = "EK ... " // <- from your Enigma
+
+// some helpers to go from Char to Index and back:
+indexToChar : Index -> Char
+indexToChar o = (0b0 # o) + 'A'
+
+charToIndex : Char -> Index
+charToIndex c = drop`{1}(c - 'A')
+
+stringToOffsets : [26]Char -> [26]Offset
+stringToOffsets chars =
+    [ drop`{2}((c + 26 - a) %26)
+    | c <- chars
+    | a <- alphabet
+    ]
+// EndBasicTypes
+
+// BeginRotorType
+// a rotor elt is:  (Fwd,    Rev,    Pin)
+type RotorElement = (Offset, Offset, Bit)
+type Rotor = [26]RotorElement
+// EndRotorType
+
+type CharPerm = [26]Char
+type Reflector= [26]Offset
+type Swaps n  = [n][2]Char
+
+rotorIchars     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+rotorIIchars    = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
+rotorIIIchars   = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
+reflBchars      = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+
+
+// BeginRotorDef
+buildRotor : [26]Char -> [26]Bit -> Rotor
+buildRotor rotorChars pins = [ (of, ob, p)
+                             | of <- fwd
+                             | ob <- rev
+                             | p <- pins
+                             ] where
+    fwd      = stringToOffsets rotorChars
+    revChars = invertPermutation rotorChars
+    rev      = stringToOffsets revChars
+// EndRotorDef
+
+// BeginReflectorDef
+doReflector : [26]Offset -> Index -> Index
+doReflector rf i = (i + (0b0 # (rf@i)) ) % 26
+
+doRotorFwd : Rotor -> Index -> Index
+doRotorFwd r i = (i + (0b0 # (r@i).0 )) % 26
+
+doRotorRev : Rotor -> Index -> Index
+doRotorRev r i = (i + (0b0 # (r@i).1 )) % 26
+
+doOneRotor refl rotor i =
+    doRotorRev rotor (doReflector refl (doRotorFwd rotor i))
+
+doTwoRotors refl r1 r2 i =
+    doRotorRev r2 (doOneRotor refl r1
+                  (doRotorFwd r2 i))
+// EndReflectorDef
+
+// BeginIndexOf
+indexOf c permutation = candidates ! 0 where
+    candidates = [ -1 ] # [ if c == s then i else p
+                          | s <- permutation
+                          | p <- candidates
+                          | i <- [ 0 .. 25 ]
+                          ]
+// EndIndexOf
+
+// BeginInvertPermutation
+invertPermutation perm =
+    [ indexToChar (indexOf c perm)
+    | c <- alphabet
+    ]
+// EndInvertPermutation
+
+// BeginOneChar
+// encryptOneChar
+// takes the offsets of a rotor, its inversion,
+// a reflector and a character and
+// returns the encrypted character
+encryptOneChar : [26]Offset -> [26]Offset ->
+                 [26]Offset -> Char -> Char
+encryptOneChar rotorFwd rotorRev reflector
+               inputChar = outputChar where
+  inputIndex   = charToIndex inputChar
+  afterRI      = applyOffsetToIndex rotorFwd inputIndex
+  afterRefl    = applyOffsetToIndex reflector afterRI
+  outputIndex  = applyOffsetToIndex rotorRev afterRefl
+  outputChar   = indexToChar outputIndex
+
+// encryptOneRotor
+// takes the strings for a rotor and a reflector
+// and message and encrypts the message one character
+// at a time, first rotating the rotor each step
+encryptOneRotor rotor reflector message =
+    [ encryptOneChar (rotorOff <<< i)
+                     (rotorRevOff <<< i)
+                     reflectorOff c
+    | c <- message
+    | i <- [1 .. 100]
+    ] where
+        rotorOff = stringToOffsets rotor
+        rotorRev = invertPermutation rotor
+        rotorRevOff = stringToOffsets rotorRev
+        reflectorOff = stringToOffsets reflector
+// EndOneChar
+
+// Chapter 6 functions:
+
+// BeginPinsDef
+setBit : {a, b} (fin a, fin b, b >= 1)
+         => [a] -> [b] -> [b]
+setBit b n = n || ((1 >>> 1) >> b)
+
+pinsI, pinsII, pinsIII : [26]
+pinsI   = setBit (indexOf 'Q' alphabet) zero
+pinsII  = setBit (indexOf 'E' alphabet) zero
+pinsIII = setBit (indexOf 'V' alphabet) zero
+
+rotorI   = buildRotor rotorIchars pinsI
+rotorII  = buildRotor rotorIIchars pinsII
+rotorIII = buildRotor rotorIIIchars pinsIII
+// EndPinsDef
+
+reflB    = stringToOffsets reflBchars
+
+doThreeRotors refl rs i =
+    doRotorRev r3 (doTwoRotors refl r1 r2
+                  (doRotorFwd r3 i)) where
+    r1 = rs@0
+    r2 = rs@1
+    r3 = rs@2
+
+doPlugFwd : CharPerm -> Char -> Index
+doPlugFwd plugboard c = charToIndex newC where
+  newC = plugboard@(charToIndex c)
+
+doPlugRev : CharPerm -> Index -> Char
+doPlugRev plugboard i = plugboard@i
+
+// BeginEnigmaStateDef
+type EnigmaState = {
+    rotors     : [3]Rotor,
+    reflector  : Reflector,
+    plugboard  : CharPerm
+}
+
+buildEnigmaState r1 r2 r3 refl plug =
+    { rotors = [r1,r2,r3]
+    , reflector = refl
+    , plugboard = plug
+    }
+
+// EndEnigmaStateDef
+
+// BeginRotationsDef
+// getRotations takes 3 rotors, returns a bit
+// for each rotor, whether that rotor should advance.
+getRotations : [3]Rotor -> [3]Bit
+getRotations rs = [r0, r1, r2] where
+    pins = getPins rs
+    r0 = pins@1
+    r1 = pins@2 || pins@1
+    r2 = True
+
+// getPins: Extracts the pin values from three rotors
+getPins : [3]Rotor -> [3]Bit
+getPins rs = [ ((rs@0)@0).2, ((rs@1)@0).2, ((rs@2)@0).2 ]
+// EndRotationsDef
+
+// BeginAdvanceDef
+advanceRotor : Rotor -> Bit -> Rotor
+advanceRotor r b = if b then r <<< 1 else r
+
+advanceRotors : EnigmaState -> EnigmaState
+advanceRotors state = newState where
+    newState = { rotors = newRotors,
+                 reflector = state.reflector,
+                 plugboard = state.plugboard}
+    newRotors = [ advanceRotor r b
+                | r <- state.rotors
+                | b <- rbits
+                ]
+    rbits = getRotations state.rotors
+
+advanceRotors' : [3]Rotor -> [3]Rotor
+advanceRotors' rs = [ advanceRotor r b
+                   | r <- rs
+                   | b <- rbits
+                   ] where
+    rbits = getRotations rs
+// EndAdvanceDef
+
+// BeginRotorStates
+enigmaStates start = estates where
+    estates = [start] # [advanceRotors prev | prev <- estates]
+// EndRotorStates
+
+// BeginPlugboardDef
+buildPlugboard : {n} (fin n, width n >= 1) =>
+    Swaps n -> [26][8] -> [width n] -> CharPerm
+
+buildPlugboard swaps permutation i =
+    if i >= width swaps
+        then permutation
+        else buildPlugboard swaps swappedPerm (i + 1) where
+            swappedPerm = doSwap (swaps@i) permutation
+
+doSwap : [2][8] -> [26][8] -> [26][8]
+doSwap [c, d] perm = perm2 where
+    indexOfC = indexOf c perm
+    indexOfD = indexOf d perm
+    perm1 = [ if i == indexOfC then d else x
+            | x <- perm | i <- [0..25]]
+    perm2 = [ if i == indexOfD then c else x
+            | x <- perm1 | i <- [0..25]]
+
+franklinHeathPlugboard = buildPlugboard
+    ["AP","BR","CM","FZ","GJ","IL","NT","OV","QS","WX"]
+    alphabet 0
+// EndPlugboardDef
+
+basicEnigmaState = buildEnigmaState
+    rotorI rotorII rotorIII reflB
+    franklinHeathPlugboard
+
+simpleEnigmaState = buildEnigmaState
+    rotorI rotorII rotorIII reflB
+    alphabet
+
+// BeginDoOneChar
+doOneChar : Char -> EnigmaState -> Char
+doOneChar c es =
+    doPlugRev es.plugboard
+              (doThreeRotors
+                 es.reflector
+                 es.rotors
+                 (doPlugFwd es.plugboard c))
+// EndDoOneChar
+
+// BeginDoEnigma
+doEnigma startState message =
+  [ doOneChar c es
+  | c <- message
+  | es <- drop`{1}(enigmaStates startState)
+  ]
+// EndDoEnigma
+
+// Cryptol wibble: need ()'s or the drop messes parser up
+
+buildRotorRing rChars pins ring = [ (of, ob, p)
+                                  | of <- fwd
+                                  | ob <- rev
+                                  | p <- pins
+                                  ] where
+    fwd      = (stringToOffsets rChars) >>> ring
+    revChars = invertPermutation rChars
+    rev      = (stringToOffsets revChars) >>> ring
+
+// BeginRotorRingState
+rotorI'   = buildRotorRing rotorIchars pinsI (charToIndex 'J')
+rotorII'  = buildRotorRing rotorIIchars pinsII (charToIndex 'N')
+rotorIII' = buildRotorRing rotorIIIchars pinsIII (charToIndex 'U')
+
+fhRingState = buildEnigmaState
+    rotorI' rotorII' rotorIII' reflB alphabet
+// EndRotorRingState
+
+
+// BeginSetKey
+setKey : EnigmaState -> [3]Char -> EnigmaState
+setKey state key = { rotors    = rs'
+                   , reflector = state.reflector
+                   , plugboard = state.plugboard
+                   } where
+    rs' = [ r <<< o
+          | r <- state.rotors
+          | o <- keyOffs ]
+    keyOffs = [ charToIndex c | c <- key ]
+// EndSetKey

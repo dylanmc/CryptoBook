@@ -1,16 +1,23 @@
 alphabet   = [ 'A' .. 'Z' ]
-            //ABCDEFGHIJKLMNOPQRSTUVWXYZ
-rotorI     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-rotorII    = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
-rotorIII   = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
-reflectorB = "YRUHQSLDPXNGOKMIEBFZCWVJAT" // permutation with rotor set to A
+                // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+rotorIchars     = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+rotorIIchars    = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
+rotorIIIchars   = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
+rotorIVchars    = "ESOVPZJAYQUIRHXLNFTGKDCMWB" // from Wikipedia Enigma_rotor_details
+rotorVchars     = "VZBRGITYUPSDNHLXAWMJQOFECK"
+rotorVIchars    = "JPGVOUMFYQBENHZRDKASXLICTW"
+rotorVIIchars   = "NZJHGRCXMYSWBOUFAIVLPEKQDT"
+rotorVIIIchars  = "FKQHTLXOCBJSPDZRAMEWNIUYGV"
+reflectorAchars = "EJMZALYXVBWFCRQUONTSPIKHGD" // permutation with rotor set to A
+reflectorBchars = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+reflectorCchars = "FVPJIAOYEDRZXWGCTKUQSBNMHL"
 
 notchI     = (1 << asciiToIndex 'Q' ):[26]
 notchII    = (1 << asciiToIndex 'E' ):[26]
 notchIII   = (1 << asciiToIndex 'V' ):[26]
 
 offsetToChar : Offset -> Char
-offsetToChar o = 'A' + (zero # o)
+offsetToChar o = 'A' + (0b0 # o)
 charToOffset : Char -> Offset
 charToOffset c = drop`{1}(c - 'A')
 
@@ -19,20 +26,28 @@ charToOffset c = drop`{1}(c - 'A')
 stringToOffsets : String 26 -> Offsets 26
 stringToOffsets reflector = [ drop`{1}((26 + r - c) % 26) | c <- alphabet | r <- reflector ]
 
-reflectorBoff = stringToOffsets reflectorB
+reflectorAoff = stringToOffsets reflectorAchars
+reflectorBoff = stringToOffsets reflectorBchars
+reflectorCoff = stringToOffsets reflectorCchars
 
 rotorIoff, rotorIIoff, rotorIIIoff : Offsets 26
-rotorIoff   = stringToOffsets rotorI
-rotorIIoff  = stringToOffsets rotorII
-rotorIIIoff = stringToOffsets rotorIII
+rotorIoff   = stringToOffsets rotorIchars
+rotorIIoff  = stringToOffsets rotorIIchars
+rotorIIIoff = stringToOffsets rotorIIIchars
+rotorVIoff  = stringToOffsets rotorVIchars
+rotorVIIIoff  = stringToOffsets rotorVIIIchars
 
-rotorIbwd = invertPermutation rotorI
-rotorIIbwd = invertPermutation rotorII
-rotorIIIbwd = invertPermutation rotorIII
+rotorIrev = invertPermutation rotorIchars
+rotorIIrev = invertPermutation rotorIIchars
+rotorIIIrev = invertPermutation rotorIIIchars
+rotorVIrev = invertPermutation rotorVIchars
+rotorVIIIrev = invertPermutation rotorVIIIchars
 
-rotorIoffBwd = stringToOffsets rotorIbwd
-rotorIIoffBwd = stringToOffsets rotorIIbwd
-rotorIIIoffBwd = stringToOffsets rotorIIIbwd
+rotorIoffBwd = stringToOffsets rotorIrev
+rotorIIoffBwd = stringToOffsets rotorIIrev
+rotorIIIoffBwd = stringToOffsets rotorIIIrev
+rotorVIoffBwd = stringToOffsets rotorVIrev
+rotorVIIIoffBwd = stringToOffsets rotorVIIIrev
 
 sum ls = sums!0 where sums= [0] # [ (p + n) % 26 | p <- ls | n <- sums ]
 // sum reflectorBoff == 0
@@ -40,7 +55,7 @@ sum ls = sums!0 where sums= [0] # [ (p + n) % 26 | p <- ls | n <- sums ]
 
 type Char          = [8]
 type Offset        = [7]
-type Rotor         = [26](Offset,Offset,Bit) // fwd, bwd, pin
+type Rotor         = [26](Offset,Offset,Bit) // fwd, rev, pin
 type Pins          = [26]Bit
 type OffsetPerm    = [26]Offset
 type CharPerm      = [26]Char
@@ -67,20 +82,22 @@ doSwap [c, d] perm = perm2 where
     perm1 = [ if i == indexOfC then d else x | x <- perm | i <- [0..25]]
     perm2 = [ if i == indexOfD then c else x | x <- perm1 | i <- [0..25]]
 
-pinsI, pinsII, pinsIII, zeroPins : Pins
+pinsI, pinsII, pinsIII, pinsVI, pinsVIII, zeroPins : Pins
 zeroPins = 0
 
 setBit : {a, b} (fin a, fin b, b >= 1) => [a] -> [b] -> [b]
 setBit b n = n || ((1 >>> 1) >> b)
 
-pinsI   = setBit (indexOf 'Q' alphabet) zeroPins
-pinsII  = setBit (indexOf 'E' alphabet) zeroPins
-pinsIII = setBit (indexOf 'V' alphabet) zeroPins
+pinsI    = setBit (indexOf 'Q' alphabet) zeroPins
+pinsII   = setBit (indexOf 'E' alphabet) zeroPins
+pinsIII  = setBit (indexOf 'V' alphabet) zeroPins
+pinsVI   = zero // need to find this
+pinsVIII = zero // need to find this
 
 buildRotor : OffsetPerm -> OffsetPerm -> Pins -> Rotor
-buildRotor fwd bwd bs = [ ( of, ob, b )
+buildRotor fwd rev bs = [ ( of, ob, b )
                         | of <- fwd
-                        | ob <- bwd
+                        | ob <- rev
                         | b <- bs
                         ]
 
@@ -93,11 +110,11 @@ type EnigmaState = {
 // Basic Enigma state has Rings all at 1, Rotors at "AAA"
 buildBasicState : [3]OffsetPerm -> [3]OffsetPerm -> [3]Pins ->
     Reflector -> CharPerm -> EnigmaState
-buildBasicState fwdOffs bwdOffs pins refl plug =
+buildBasicState fwdOffs revOffs pins refl plug =
     { rotors = rs, reflector = refl, plugboard = plug } where
     rs = [ buildRotor f b p
          | f <- fwdOffs
-         | b <- bwdOffs
+         | b <- revOffs
          | p <- pins
          ]
 
@@ -118,7 +135,7 @@ buildEnigmaState fo bo pins refl plug rings key =
 
 // plugboard from FranklinHeath wiki:
 franklinHeathPlugboard = buildPlugboard
-    ["AP","BR","CM","FZ","GJ","IL","NT","QS","WX"] alphabet 0
+    ["AP","BR","CM","FZ","GJ","IL","NT","OV","QS","WX"] alphabet 0
 nullPlugboard = alphabet
 
 franklinHeathRings = [9,13,20]  // "JNU"
@@ -143,8 +160,9 @@ franklinHeathState = buildEnigmaState
                         franklinHeathRings
                         "VQQ"
 
-// http://enigma.louisedade.co.uk/enigma.html?m3;b;b123;AJNU;AVQQ;AP-BR-CM-FZ-GJ-IL-NT-QS-WX
-// HABHVHLYDFNADZY -> THATAITWELLDVNE - puzzling
+
+// http://enigma.louisedade.co.uk/enigma.html?m3;b;b123;AJNU;AVQQ;AP-BR-CM-FZ-GJ-IL-NT-OV-QS-WX
+// HABHVHLYDFNADZY -> THATSITWELLDONE
 
 getPins : ThreeRotors -> [3]Bit
 getPins rs = [ ((rs@0)@0).2, ((rs@1)@0).2, ((rs@2)@0).2 ]
@@ -199,6 +217,14 @@ doRotorFwd, doRotorBwd : Rotor -> Offset -> Offset
 doRotorFwd rotor o = (o + (rotor @ o).0) % 26
 doRotorBwd rotor o = (o + (rotor @ o).1) % 26
 
+encryptOneChar : [26]Offset -> [26]Offset -> Char -> Char
+encryptOneChar rotor reflector inputChar = outputChar where
+  inputOffset  = charToOffset inputChar
+  rotorO       = rotor @ inputOffset
+  reflO        = reflector @ rotorO
+  outputOffset = rotor @ reflO
+  outputChar   = offsetToChar outputOffset
+
 doOneRotor : Rotor -> Reflector -> Offset -> Offset
 doOneRotor rotor rOffsets o = doRotorBwd rotor (doReflector rOffsets (doRotorFwd rotor o))
 
@@ -213,11 +239,11 @@ invertPermutation : [26]Char -> [26]Char
 invertPermutation permutation = [ alphabet @ (indexOf c permutation)
                                 | c <- alphabet ]
 
-encryptOneRotor : {n} (fin n) => Rotor -> Reflector -> String n -> String n
+// encryptOneRotor : {n} (fin n) => Rotor -> Reflector -> String n -> String n
 encryptOneRotor rotor reflOf message =
-    [ offsetToChar (doOneRotor (rotor <<< i) reflOf (charToOffset c))
+    [ encryptOneChar (rotor <<< i) reflOf c
     | c <- message
-    | i <- [1 .. n+1]
+    | i <- [1 .. 100]
     ]
 
 doTwoRotors r1 r2 refl c =
@@ -257,4 +283,37 @@ enigmaStep es inC = doPlugboard es.plugboard (offsetToChar eno) where
 // encryptOneRotor (buildRotor rotorI zero) reflectorBoff "YMXOVPE"
 // "GOODJOB"
 
+enigmaManualPlugboard = buildPlugboard
+    ["AM","FI","NV","PS","TU","WZ"] alphabet 0
+enigmaManualRings = [24,13,22]
+enigmaManualState = buildEnigmaState
+                        [ rotorIIoff,    rotorIoff,    rotorIIIoff ]
+                        [ rotorIIoffBwd, rotorIoffBwd, rotorIIIoffBwd ]
+                        [ pinsII,        pinsI,        pinsIII ]
+                        reflectorAoff
+                        enigmaManualPlugboard
+                        enigmaManualRings
+                        "ABL"
+enigmaManualMessage="GCDSEAHUGWTQGRKVLFGXUCALXVYMIGMMNMFDXTGNVHVRMMEVOUYFZSLRHDRRXFJWCFHUHMUNZEFRDISIKBGPMYVXUZ"
 
+scharnhorstPlugboard = buildPlugboard
+    ["AN","EZ","HK","IJ","LR","MQ","OT","PV","SW","UX"] alphabet 0
+scharnhorstRings = [01,08,13]
+scharnhorstState = buildEnigmaState
+                        [ rotorIIIoff,    rotorVIoff,    rotorVIIIoff ]
+                        [ rotorIIIoffBwd, rotorVIoffBwd, rotorVIIIoffBwd ]
+                        [ pinsIII,        pinsVI,        pinsVIII ]
+                        reflectorBoff
+                        scharnhorstPlugboard
+                        scharnhorstRings
+                        "UZV"
+scharnhorstMessage = "YKAENZAPMSCHZBFOCUVMRMDPYCOFHADZIZMEFXTHFLOLPZLFGGBOTGOXGRETDWTJIQHLMXVJWKZUASTR"
+
+fhKeyAAAState = buildEnigmaState
+                        [ rotorIoff, rotorIIoff, rotorIIIoff ]
+                        [ rotorIoffBwd, rotorIIoffBwd, rotorIIIoffBwd ]
+                        [ pinsI, pinsII, pinsIII ]
+                        reflectorBoff
+                        nullPlugboard
+                        franklinHeathRings
+                        "AAA"
