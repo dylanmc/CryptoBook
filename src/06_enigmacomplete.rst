@@ -209,11 +209,29 @@ make that easy:
 
 .. index::
    single: zero
+   single: or operator
 
-One interesting thing about this code is the use of ``zero``. It's a
-built-in Cryptol ``0`` constant that can have any type. In this case, it's
-a sequence of as many ``False`` bits as we need to initialize our empty
-pins.
+You might be surprised by the definition of ``setBit``. Our goal is to
+take a ``1`` in position 0, and use the *shift* operation (``>> b``),
+to move it ``b`` spots to the right. So we first need a ``1`` in the
+first position.  There are many ways to achieve this\ [#]_. The way
+this function does it is by taking a ``1`` in the least significant
+position, and rotating it one position to the right (``>>> 1``), which
+wraps it around to the most significant place, which we then shift
+``b`` positions to the right. Finally we use the *or* operator,
+``||``, to overlay our newly set bit with our input ``n``.
+
+.. [#]
+
+   Another way to achieve it would be to write ``(0b1 # zero)``. Since
+   Cryptol knows how many bits the result needs to have, it will
+   stretch ``zero`` to have the right number of ``0`` bits after the
+   ``0b1`` to work out.
+
+The other interesting thing about this code is the use of ``zero``.
+It's a built-in Cryptol ``0`` constant that can have any type. In this
+case, it's a sequence of as many ``False`` bits as we need to
+initialize our empty pins.
 
 Now we have enough functions to build a sequence of rotor positions that follow
 the Enigma's rules:

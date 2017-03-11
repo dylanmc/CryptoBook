@@ -85,6 +85,10 @@ invertPermutation perm =
     ]
 // EndInvertPermutation
 
+applyOffsetToIndex : [26]Offset -> Index -> Index
+applyOffsetToIndex offsets i =
+    ((0b0 # (offsets @ i)) + i) % 26
+
 // BeginOneChar
 // encryptOneChar
 // takes the offsets of a rotor, its inversion,
@@ -122,7 +126,7 @@ encryptOneRotor rotor reflector message =
 // BeginPinsDef
 setBit : {a, b} (fin a, fin b, b >= 1)
          => [a] -> [b] -> [b]
-setBit b n = n || ((1 >>> 1) >> b)
+setBit b n = n || (1 >>> 1 >> b)
 
 pinsI, pinsII, pinsIII : [26]
 pinsI   = setBit (indexOf 'Q' alphabet) zero
@@ -167,7 +171,7 @@ buildEnigmaState r1 r2 r3 refl plug =
 
 // BeginRotationsDef
 // getRotations takes 3 rotors, returns a bit
-// for each rotor, whether that rotor should advance.
+// for each rotor, whether it should advance.
 getRotations : [3]Rotor -> [3]Bit
 getRotations rs = [r0, r1, r2] where
     pins = getPins rs
@@ -175,9 +179,12 @@ getRotations rs = [r0, r1, r2] where
     r1 = pins@2 || pins@1
     r2 = True
 
-// getPins: Extracts the pin values from three rotors
+// getPins: Extracts the pin values from 3 rotors
 getPins : [3]Rotor -> [3]Bit
-getPins rs = [ ((rs@0)@0).2, ((rs@1)@0).2, ((rs@2)@0).2 ]
+getPins rs = [ ((rs@0)@0).2
+             , ((rs@1)@0).2
+             , ((rs@2)@0).2
+             ]
 // EndRotationsDef
 
 // BeginAdvanceDef
@@ -185,23 +192,20 @@ advanceRotor : Rotor -> Bit -> Rotor
 advanceRotor r b = if b then r <<< 1 else r
 
 advanceRotors : EnigmaState -> EnigmaState
-advanceRotors state = newState where
-    newState = { rotors = newRotors,
-                 reflector = state.reflector,
-                 plugboard = state.plugboard}
-    newRotors = [ advanceRotor r b
-                | r <- state.rotors
-                | b <- rbits
-                ]
-    rbits = getRotations state.rotors
-
-advanceRotors' : [3]Rotor -> [3]Rotor
-advanceRotors' rs = [ advanceRotor r b
-                   | r <- rs
-                   | b <- rbits
-                   ] where
-    rbits = getRotations rs
+advanceRotors state =
+    { rotors = newRotors
+    , reflector = state.reflector
+    , plugboard = state.plugboard
+    } where
+      newRotors = [ advanceRotor r b
+                  | r <- state.rotors
+                  | b <- rbits
+                  ]
+      rbits = getRotations state.rotors
 // EndAdvanceDef
+// Cryptol wibble: it would be nice to have syntax shorthand for
+//  creating a new record from an old one, with only one field
+//  changed.
 
 // BeginRotorStates
 enigmaStates start = estates where
@@ -257,27 +261,7 @@ doEnigma startState message =
   | es <- drop`{1}(enigmaStates startState)
   ]
 // EndDoEnigma
-
 // Cryptol wibble: need ()'s or the drop messes parser up
-
-buildRotorRing rChars pins ring = [ (of, ob, p)
-                                  | of <- fwd
-                                  | ob <- rev
-                                  | p <- pins
-                                  ] where
-    fwd      = (stringToOffsets rChars) >>> ring
-    revChars = invertPermutation rChars
-    rev      = (stringToOffsets revChars) >>> ring
-
-// BeginRotorRingState
-rotorI'   = buildRotorRing rotorIchars pinsI (charToIndex 'J')
-rotorII'  = buildRotorRing rotorIIchars pinsII (charToIndex 'N')
-rotorIII' = buildRotorRing rotorIIIchars pinsIII (charToIndex 'U')
-
-fhRingState = buildEnigmaState
-    rotorI' rotorII' rotorIII' reflB alphabet
-// EndRotorRingState
-
 
 // BeginSetKey
 setKey : EnigmaState -> [3]Char -> EnigmaState

@@ -506,8 +506,7 @@ into an implementation of a one-rotor Enigma:
    :linenos:
 
 There's a lot of code here, so let's go through it line by line:
-Lines 1-4 are comments describing what the ``encryptOneChar`` function
-is supposed to do. Lines 5 and 6 define the type of
+Lines 5 and 6 define the type of
 ``encryptOneChar``, and lines 7 and 8 define the name of the function
 and its arguments. We say here that the output of the function is
 ``outputChar``, but the ``where`` means we're defining ``outputChar``
