@@ -12,7 +12,7 @@
 \setmonofont{Menlo}[Scale=0.8]
 %\linespread{0.5}
 \usepackage{enumitem}
-\setlist{noitemsep} 
+\setlist{noitemsep}
 % hide section numbers:
 \renewcommand{\thesection}{}
 \renewcommand{\thesubsection}{}
@@ -24,7 +24,7 @@
 \makeatother
 
 \begin{document}
-\section{Cryptol Reference Card} 
+\section{Cryptol Reference Card}
 A brief summary of Cryptol's syntax and basic patterns. For more details, look for the book {\it Programming Cryptol}.
 \section{Starting Cryptol, basic commands}
 Start Cryptol either by itself, or with the name of a Cryptol file as its argument:
@@ -38,12 +38,12 @@ Start Cryptol either by itself, or with the name of a Cryptol file as its argume
             |___/|_|  version 2.4.0
 
 Loading module Cryptol
-Cryptol> 
+Cryptol>
 \end{verbatim}
 
 At the Cryptol prompt, a number of commands are available:
 \begin{verbatim}
-:set base=10   
+:set base=10
 :set ascii=on // or =off
 :r  // or :reload - reloads file
 :l <filename> // or :load <filename>
@@ -55,7 +55,11 @@ Pressing Tab at the \verb|Cryptol>| prompt, after typing \verb|:|, or after \ver
 Cryptol's types include:
 \begin{itemize}
 \item{\it Bit} values can be \verb|True| or \verb|False|
-\item{\it Sequences} whose elements must have the same type, like \verb+[0xa, 0xb, 0xc]+. Elements of sequences can be accessed with the \verb|@| and \verb|!| indexing operators, which index from the beginning and the end of the sequence, respectively. For example \verb+[0xa, 0xb, 0xc]@0+ is \verb+0xa+.
+\item{\it Sequences} whose elements must have the same type, like
+    \verb+[0xa, 0xb, 0xc]+. Elements of sequences can be accessed with
+        the \verb|@| and \verb|!| indexing operators, which index from
+        the beginning and the end of the sequence, respectively. For
+        example \texttt{[0xa, 0xb, 0xc]@0} is \verb+0xa+.
 \item{\it Tuples} whose elements can have different types, like \verb+('a', 0xf00d, (True, False))+ Elements of tuples can be accessed via \verb+.+ like this: \texttt{(True, 0xa).0} is \verb+True+.
 \item{\it Records} are like tuples with named elements, and are also accessed with \verb+.+ like this:  \texttt{ \string{ foo=1, bar=2 \string}.bar} is 2.
 \end{itemize}
@@ -113,22 +117,34 @@ Cryptol> [0x1, 0x3 ...] // 4 bits/elt
 \end{verbatim}
 Finally, Cryptol lets you specify the elements of a sequence with the {\it sequence comprehension} syntax, which is inspired by the same concept in mathematics notation. Here are some examples:
 \begin{verbatim}
-Cryptol> [ a + 3 | a <- [1 .. 10] ] 
+Cryptol> [ a + 3 | a <- [1 .. 10] ]
 [4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
 Cryptol> [ a + b | a <- [1 .. 10] \
-                 | b <- [3 ...] ] 
+                 | b <- [3 ...] ]
 [4, 6, 8, 10, 12, 14, 0, 2, 4, 6]
 \end{verbatim}
-The first one would be described as ``a sequence of elements whose values are $a + 3$, where a is drawn from the sequence `1 to 10' ''. The second one is a {\it parallel comprehension}. The resulting length of a parallel comprehension is the shortest length of its {\it legs}. In this case, we would describe it as ``a sequence of elements whose values are $a + b$ where a is drawn from the sequence `1 to 10' and b is drawn from the infinite sequence starting at 3''.
+The first one would be described as ``a sequence of elements whose
+values are $a + 3$, where a is drawn from the sequence `1 to 10' ''.
+The second one is a {\it parallel comprehension}. The resulting length
+of a parallel comprehension is the shortest length of its {\it legs}.
+In this case, we would describe it as ``a sequence of elements whose
+values are $a + b$ where a is drawn from the sequence `1 to 10' and b
+is drawn from the infinite sequence starting at 3''.
 
-Cryptol also supports {\it Cartesian comprehensions}, whose legs are separated by commas. The first element of the first leg is paired with each element of the other leg(s), followed by the second element of the first leg, etc:
+Cryptol also supports {\it Cartesian comprehensions}, whose legs are
+separated by commas. The first element of the first leg is paired with
+each element of the other leg(s), followed by the second element of
+the first leg, etc:
 \begin{verbatim}
 Cryptol> [(a, b) | a <- [1, 2]\
-                 , b <- [3, 4] ] 
+                 , b <- [3, 4] ]
 [(1, 3), (1, 4), (2, 3), (2, 4)]
 \end{verbatim}
 
-Other things you can do with sequences: the built-in \verb+reverse+ function reverses the elements of a sequence, and the \verb+#+ operator concatenates two sequences (of course the two arguments to \verb+#+ must have elements of the same type).
+Other things you can do with sequences: the built-in \verb+reverse+
+function reverses the elements of a sequence, and the \verb+#+
+operator concatenates two sequences (of course the two arguments to
+\verb+#+ must have elements of the same type).
 \begin{verbatim}
 Cryptol> reverse ['0' .. '9'] # ['a' .. 'z']
 "9876543210abcdefghijklmnopqrstuvwxyz"
@@ -154,13 +170,20 @@ Reading the type of a function in Cryptol, you have:
 \item{the final element is the type of the return value.}
 \end{itemize}
 
-Cryptol supports {\em curried} arguments, which means that if you pass fewer arguments than a function takes, the result is a function that accepts the remaining arguments and has the same return type. For example:
+Cryptol supports {\em curried} arguments, which means that if you pass
+fewer arguments than a function takes, the result is a function that
+accepts the remaining arguments and has the same return type. For
+example:
 \begin{verbatim}
 addThree = f 3
 addThree 8 // value is 11
 \end{verbatim}
 
-You can provide the type of a function along with its definition, or you can let Cryptol infer a function's type for you. Sometimes providing the type can help Cryptol give you better error messages - Cryptol's inferred types are very general, and can be confusing sometimes.
+You can provide the type of a function along with its definition, or
+you can let Cryptol infer a function's type for you. Sometimes
+providing the type can help Cryptol give you better error messages -
+Cryptol's inferred types are very general, and can be confusing
+sometimes.
 
 \section{Type variables}
 Type variables can occur in a few contexts in a Cryptol program.
@@ -174,41 +197,55 @@ drop`{2}[1 .. 10]
 Type-level arguments can be positional or named, like this:
 \begin{verbatim}
 Cryptol> :t take
-take : {front, back, elem} (fin front) => 
+take : {front, back, elem} (fin front) =>
   [front + back]elem -> [front]elem
 Cryptol> take`{back=3}[1 .. 10]
 [1, 2, 3, 4, 5, 6, 7]
 \end{verbatim}
-We asked for the type of \verb+take+, and we learned that its argument is $front+back$ elements long, and that it returns $front$ elements. If we pass \verb+back=3+ as the type argument to \verb+take+, Cryptol knows the list has $10$ elements, and also that $front+3=10$, so it infers that we want to take $7$ elements of our list \verb+[1 .. 10]+.
+We asked for the type of \verb+take+, and we learned that its argument
+is $front+back$ elements long, and that it returns $front$ elements.
+If we pass \verb+back=3+ as the type argument to \verb+take+, Cryptol
+knows the list has $10$ elements, and also that $front+3=10$, so it
+infers that we want to take $7$ elements of our list \verb+[1 .. 10]+.
 
 \section{{\tt :prove} and {\tt :sat}}
-If a function returns \verb+Bit+, you can use Cryptol's powerful theorem proving powers to either prove that the function is true {\em for all} values of its argument(s), using \verb+:prove+, or that {\em there exists} at least one input value that makes the function return True, using \verb+:sat+. Here, we prove that $x + x$ is always equal to $x << 1$.
+If a function returns \verb+Bit+, you can use Cryptol's powerful
+theorem proving powers to either prove that the function is true {\em
+for all} values of its argument(s), using \verb+:prove+, or that {\em
+there exists} at least one input value that makes the function return
+True, using \verb+:sat+. Here, we prove that $x + x$ is always equal
+to $x << 1$.
 \begin{verbatim}
 Cryptol> :prove (\x -> x + x == x << 1):[32]->Bit
 Q.E.D.
 \end{verbatim}
 
-One limitation of {\tt :prove} and {\tt :sat} is that the arguments have to be {\em monomorphic}. That's why we had to specify the function had type \verb+[32]->Bit+. Here we prove that $x+y == y+x$ for all 32-bit values x and y:
+One limitation of {\tt :prove} and {\tt :sat} is that the arguments
+have to be {\em monomorphic}. That's why we had to specify the
+function had type \verb+[32]->Bit+. Here we prove that $x+y == y+x$
+for all 32-bit values x and y:
 \begin{verbatim}
-Main> :prove (\x y -> x+y == y + x):[32]->[32]->Bit
+Main> :prove (\x y -> x+y == y+x):[32]->[32]->Bit
 Q.E.D.
 \end{verbatim}
 Here we ask Cryptol if there are an 8-bit $x$ and $y$ such that $x^y = 123$:
 \begin{verbatim}
 Cryptol> :sat (\x y -> x ^^ y == 123):[8]->[8]->Bit
-((\x y -> x ^^ y == 123) : [8] -> [8] -> Bit) 
+((\x y -> x ^^ y == 123) : [8] -> [8] -> Bit)
 51 31 = True
 Cryptol> 51 ^^ 31:[8]
 123
 \end{verbatim}
 \section{Defining types}
-Typically all type names start with capital letters. Define a new type like this:
+Type names typically start with capital letters. You can define a new type like this:
 \begin{verbatim}
 type NumChars = 26
 type Permutation=[NumChars]Char
 type Index=[7]
 \end{verbatim}
-Having defined this type, you can define functions that take arguments, or return values of that type. Your code becomes more readable with descriptive type names.
+Having defined this type, you can define functions that take
+arguments, or return values of that type. Your code becomes more
+readable with descriptive type names.
 \begin{verbatim}
 invertPermutation : Permutation -> Permutation
 invertPermutation perm =

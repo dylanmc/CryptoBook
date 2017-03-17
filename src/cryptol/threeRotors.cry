@@ -2,15 +2,15 @@ module Enigma where
 
 // BeginBasicTypes
 type Char     = [8] // ASCII characters
-type Offset   = [6] // A -> 0, .. Z -> 25
-type Index    = [7] // distance between 2 chars
+type Index    = [7] // A -> 0, .. Z -> 25
+type Offset   = [6] // distance between 2 chars
 
 alphabet        = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 // rotorIchars  = "EK ... " // <- from your Enigma
 
 // some helpers to go from Char to Index and back:
 indexToChar : Index -> Char
-indexToChar o = (0b0 # o) + 'A'
+indexToChar i = (0b0 # i) + 'A'
 
 charToIndex : Char -> Index
 charToIndex c = drop`{1}(c - 'A')

@@ -34,12 +34,12 @@ the modern computer and artificial intelligence.
 
 .. [#] The British government issued a formal pardon and apology in 2013.
 
-In this chapter you will learn how to build and use a cardboard model of the
-Enigma that works exactly like the original. Then, step by step, we'll
+In the next two chapters you will learn how to build and use a cardboard model of the
+Enigma that is compatible with the original. Then, step by step, we'll
 implement the Enigma in Cryptol, and use it to encode and decode
 messages.
 
-.. finally, we'll use Cryptol's advanced features to break the enigma code.
+.. TODO: finally, we'll use Cryptol's advanced features to break the enigma code.
 
 Using a real Enigma
 -------------------
