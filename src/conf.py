@@ -55,7 +55,7 @@ master_doc = 'book'
 
 # General information about the project.
 project = 'CryptoBook'
-copyright = '2016, Dylan McNamee'
+copyright = '2017, Dylan McNamee'
 author = 'Dylan McNamee'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -245,6 +245,15 @@ htmlhelp_basename = 'CryptoBookdoc'
 
 latex_engine = 'xelatex'
 latex_elements = {
+     'fontenc': '\\usepackage{fontspec}',
+     'fontpkg': '''\
+\\setmainfont{Times Roman}
+\\setsansfont{Helvetica}
+\\setmonofont[Scale=0.8]{Menlo}''',
+
+    'geometry': '\\usepackage[vmargin=2.5cm, inner=3cm, outer=2cm]{geometry}',
+    'printindex': '\\footnotesize\\raggedright\\printindex',
+
      # The paper size ('letterpaper' or 'a4paper').
      #
      # 'papersize': 'letterpaper',

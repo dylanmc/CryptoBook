@@ -6,8 +6,6 @@
 Cryptography, Math and Programming
 ==================================
 
-Contents:
-
 .. toctree::
    :maxdepth: 2
 

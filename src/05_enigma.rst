@@ -4,7 +4,7 @@ The Enigma
 .. figure:: figures/Enigma_Milano.jpg
    :alt: The Enigma Machine
    :figclass: align-center
-   :scale: 60%
+   :width: 6cm
 
 .. index::
    single: Alan Turing
@@ -99,7 +99,7 @@ the next higher letter in the alphabet is between the grey bars.
 .. figure:: figures/OneRotorPaperEnigma.jpg
    :alt: Paper Enigma with one rotor
    :figclass: align-center
-   :scale: 60%
+   :width: 6cm
 
    Paper Enigma with one rotor
 
@@ -136,7 +136,7 @@ Implementing the Enigma in Cryptol
 -----------------------------------
 
 The Enigma is way more complicated than the Caesar or
-Vigenère ciphers. We can't just implement it in one go - instead we
+Vigenere ciphers. We can't just implement it in one go - instead we
 have to break it up into the various components and test each step as
 we go. We'll start by implementing just the rotor, then the reflector,
 then combine them into a one-rotor Enigma, and so on. Let's go!
@@ -161,7 +161,7 @@ cipher.
 
 .. figure:: figures/EnigmaOffsetsFwd.pdf
    :figclass: align-center
-   :scale: 70%
+   :width: 7cm
 
    Tracing rotor offsets in the forward direction.
 
@@ -300,7 +300,7 @@ type:
 
 Does your code agree with the cardboard Enigma?
 
-.. ANSWER::
+.. TODO - ANSWER::
 
    applyOffsetToIndex o i = (i + (0b0 # o@i)) % 26
 

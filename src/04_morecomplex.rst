@@ -13,7 +13,7 @@ In addition to typing commands at the Cryptol interpreter, Cryptol can
 load files that have programs in them. Programs are slightly different
 from the commands you've been typing so far. The main difference is that
 you don't need ``let`` when you're defining a variable (like
-``alphabet``) or a function (like \`encrypt').
+``alphabet``) or a function (like ``encrypt``).
 
 Creating a text file in a project directory
 -------------------------------------------
@@ -203,15 +203,15 @@ RESOURCE)
 The second thing we need to explain is "how / why this doesn't run
 forever, as soon as you expand any key - we haven't told Cryptol ever to
 stop!" That's right, we haven't, but let's give it a try anyway. First,
-copy your ``caesar.cry`` into a new file called ``viginere.cry``
+copy your ``caesar.cry`` into a new file called ``vigenere.cry``
 (because we'd like to reuse a lot of the code in ``caesar.cry``, and I
 promised you wouldn't have to type it in again). Second, add the above
-definition of ``expandKey`` to the end of your ``viginere.cry`` Finally,
+definition of ``expandKey`` to the end of your ``vigenere.cry`` Finally,
 start up Cryptol:
 
 .. code-block:: console
 
-   $ cryptol viginere.cry
+   $ cryptol vigenere.cry
                            _        _
       ___ _ __ _   _ _ __ | |_ ___ | |
      / __| '__| | | | '_ \| __/ _ \| |
@@ -291,7 +291,7 @@ It should start like this:
 
 ::
 
-    viginere key message =
+    vigenere key message =
       ... you fill in the rest
 
 Exercises

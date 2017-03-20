@@ -267,7 +267,7 @@ Implementing the plugboard
 .. figure:: figures/Enigma-plugboard.jpg
    :alt: The Enigma Plugboard
    :figclass: align-center
-   :scale: 60%
+   :width: 7cm
 
 Here's how the plugboard works on the cardboard Enigma:
 to configure the plugboard, you're given pairs of letters, like
