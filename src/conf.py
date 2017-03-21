@@ -247,11 +247,11 @@ latex_engine = 'xelatex'
 latex_elements = {
      'fontenc': '\\usepackage{fontspec}',
      'fontpkg': '''\
-\\setmainfont{Times Roman}
-\\setsansfont{Helvetica}
+\\setmainfont{Linux Libertine O}
+\\setsansfont{Optima}
 \\setmonofont[Scale=0.8]{Menlo}''',
 
-    'geometry': '\\usepackage[vmargin=2.5cm, inner=3cm, outer=2cm]{geometry}',
+    'geometry': '\\usepackage[vmargin=2.5cm, inner=2.5cm, outer=2.5cm]{geometry}',
     'printindex': '\\footnotesize\\raggedright\\printindex',
 
      # The paper size ('letterpaper' or 'a4paper').

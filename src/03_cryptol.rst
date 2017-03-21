@@ -2,6 +2,7 @@ Introducing Cryptol
 ===================
 
 .. index:: algorithm, Cryptol
+
 Now that you understand how data can be represented in bits and have
 been introduced to cryptography using a paper computer, you're ready to
 learn a computer language that was designed for implementing
@@ -56,6 +57,7 @@ Types of data in Cryptol
 ------------------------
 
 .. index:: type
+
 One of Cryptol's main features is that it is very careful about how data
 is represented. How data is laid out in bits is an example of a *type* in
 Cryptol. When you're talking about the type of something, often you'll
@@ -76,6 +78,7 @@ sequences. For example:
     [ 0xA, 0xB, 0xC, 0xD, 0xE ] : [5][4]Bit
 
 .. index:: sequence
+
 I would call this "a sequence of five elements, each having four bits".
 It turns out that the ``Bit`` at the end is optional: if the last
 thing in a type is a length (``[4]`` for example), you are supposed to
@@ -117,6 +120,7 @@ Enumerations: sequence shortcuts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. index:: enumeration
+
 Cryptol has some fancy ways of creating sequences other than just having
 you type them in. One way is called *enumerations*. They're a short-hand
 way of writing sequences of numbers that increment in a predictable way.
@@ -148,7 +152,10 @@ elements. The step-value is the difference between them. For example:
 Comprehensions: manipulating sequences
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. index:: sequence comprehension, variable
+.. index::
+   single: ! sequence comprehension
+   single: variable
+
 In addition to shortcuts for creating sequences, Cryptol has powerful
 ways of manipulating them, called *sequence comprehensions*. The way you
 write them in Cryptol is based on mathematical notation, so once you get
@@ -194,6 +201,7 @@ Defining functions
     single: parameters
     single: defining functions
     single: function definition
+
 In math, *functions* describe a way of creating an *output* from one or
 more *inputs*. Functions in Cryptol are almost exactly the same, and you can give
 them names if you want. Here's a picture example of a functioned named
@@ -278,6 +286,7 @@ Extracting elements from sequences
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. index:: index operator
+
 The first one is called the *index operator*. That's a fancy way of
 saying getting the n\ :sup:`th` element out of a sequence. It works
 like this:
@@ -293,6 +302,7 @@ like this:
    'f'
 
 .. index:: zero-based indexing
+
 On line 1, we created a variable called *alphabet*, which is a sequence
 of 8-bit integers that are the ASCII values of the letters of the
 alphabet. On line 2 we used the *index operator*, which is the ``@``
@@ -307,6 +317,7 @@ element of the sequence, ``alphabet @ 1`` is the second element and so
 on.
 
 .. index:: reverse index operator
+
 Cryptol also provides a *reverse index operator*, which counts backwards
 from the end of the sequence, like this:
 
@@ -326,6 +337,7 @@ sequence? Let's try:
   invalid sequence index: 26
 
 .. index:: infix operators
+
 One more thing: ``@`` and ``!`` act a lot like functions, but they're
 called *infix operators*. The only difference between a function and an
 operator is that when you call a function, its name comes first followed
@@ -338,6 +350,7 @@ you're familiar with are infix operators, like: :math:`5 + 2 - 3`.
    single: arguments
    single: parameters
    single: arguments vs. parameters
+
 **Arguments vs. parameters**: when we talk about defining and calling
 functions, we've talked about both *arguments* and *parameters*, so you
 may wonder "what's the difference?" The answer is that *parameters are
@@ -472,6 +485,7 @@ top line, and the character directly below it is the encoded / decoded
 translation of that character.
 
 .. index:: rotate operator (>>>)
+
 If we think about the *rotate* operator (``>>>``), we see that it does
 something really useful. For example, let's rotate the inner wheel by 4:
 
@@ -625,6 +639,7 @@ the Hex values of the ASCII codes for ``a``, ``A``, ``z`` and ``Z``
   +-----------+-------+-------+-------+-------+
 
 .. index:: conditional statements
+
 Hey, the difference between the upper and lower case values is exactly
 0x20! If we want everything in lower case (WHO LIKES SHOUTING, REALLY?),
 if a character's ASCII value is less than 0x61, we can add 0x20 to make it lower

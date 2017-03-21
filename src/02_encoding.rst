@@ -91,6 +91,7 @@ same, except sometimes you have both 1 along with the carry, in which
 case the sum is 1 and the carry is 1.
 
 .. index:: binary addition
+
 Here's a four-bit addition of 2 and 3:
 
 ::
@@ -191,6 +192,7 @@ Things to think about
    Eight digits? :math:`n`-digits?
 
 .. index:: overflow
+
 3. When we did :math:`-1 + 3`, the carry bit got carried off the end of
    the addition. This is called overflow. In some cases (like this one),
    it's not a problem, but in other cases, it means that you get the
@@ -200,6 +202,7 @@ Things to think about
    Hint: think about the various possible cases separately.
 
 .. index:: ones' complement
+
 4. Two's complement is a slight change from *ones' complement*, in which
    negative numbers just have their bits flipped, but you don't add a 1
    afterwards. A big advantage of two's complement is that there are two
@@ -214,6 +217,7 @@ Why ones and zeros?
 -------------------
 
 .. index:: performance
+
 It's a reasonable question - *why do computers only use ones and zeros*?
 The oversimplified, but essentially correct answer is performance and
 simplicity. Making computers faster has been a goal since they were
@@ -226,6 +230,7 @@ decrease. In current Intel CPUs, for example, it's common for a "1" to
 be as low as 1 volt. On older systems, it can be as high as 13 volts.
 
 .. index:: transistors
+
 *Transistors* are the building blocks that work with the voltages inside
 computers. They're essentially just switches that can be controlled by a
 voltage level. A transistor has an input, an output, and a controlling
@@ -255,6 +260,7 @@ different machines. The most common text encoding, called ASCII, was
 agreed on in 1963, and was in wide use through the mid 1990's.
 
 .. index:: ASCII
+
 The table below show how ASCII represents the basic letters, numbers and
 punctuation. Each character is followed by its decimal ASCII code. There
 are two "special" characters in the table, ``sp`` is the space character,
@@ -305,6 +311,7 @@ Encoding *all* languages: Unicode
     pages are encoded and transmitted.*
 
 .. index:: Unicode, UTF-8
+
 Up until the mid 1990's, computer systems that needed to process
 languages whose characters are not in the ASCII tables each used their
 own encodings. When the Internet and World Wide Web started to gain
@@ -332,8 +339,9 @@ key to making that work is that while ASCII is an 8-bit representation,
 the top-most bit of the ASCII table is always 0.
 
 .. [#] UTF-8 was invented at Bell Labs by Ken Thompson, who
-    co-invented Unix, and Rob Pike, who subsequently invented the Go 
-    programming language.
+    co-invented Unix, and Rob Pike, who subsequently moved to Google
+    where he invented the Go programming language (among other
+    accomplishments).
 
 If you're decoding a UTF-8 stream of bytes, and you encounter any byte
 with its top bit off (i.e., its decimal value is <= 127), decode it as
@@ -360,6 +368,7 @@ An aside: Hexadecimal
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. index:: hexadecimal
+
 Writing numbers in binary is tedious for mere humans\ [#]_. It takes
 eight digits to count up to 128, after all! Writing them in decimal is
 convenient for us humans, but a downside is that there's no easy way to
@@ -454,6 +463,7 @@ digitally encoded, here are some questions you can research the answers
 to.
 
 .. index:: vector graphics, bitmaps, pixels, metadata
+
 1. Two common ways of **encoding images** are pixel-based (or bitmap)
    and vector-based:
 

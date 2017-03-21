@@ -19,6 +19,7 @@ Creating a text file in a project directory
 -------------------------------------------
 
 .. index:: text file, text editors
+
 The next thing you'll want to do is create a directory (or folder) to
 keep your project files for this book. You'll need to figure out how to
 edit *text files* on your computer. Text files are different from, say,
@@ -148,6 +149,7 @@ Implementing our next cipher: Vigenère
 --------------------------------------
 
 .. index:: Vigenère cipher
+
 Given the previous exercise (please actually do it -- it's a lot of fun,
 and very informative), it's probably occurred to you that the Caesar
 cipher leaves a lot of room for improvement. You may have even thought
@@ -172,7 +174,9 @@ key to specify the shift amount. To translate an ASCII key into a shift
 amount, we do the classic "subtract the ASCII value of ``a`` from the
 ASCII value of the key character".
 
-.. index:: modulo arithmetic
+.. index::
+   single: ! modulo arithmetic
+
 The last detail is what to do if the message is longer than the key.
 What the Vigenère cipher does in this case is to "wrap around" to the
 first character of the key, and so on. In mathematical terms, this is
@@ -181,7 +185,10 @@ arithmetic from how we read clocks: there are 24 hours in a day, but our
 clocks only go to 12. For the hour past noon (or midnight) we "wrap
 around" to 1, and the next hour is 2, and so on.
 
-.. index:: key expansion, infinite sequences
+.. index::
+   single: key expansion
+   single: infinite sequences
+
 Cryptol offers us a couple ways of expressing this notion of wrapping
 around the key. The first one is to use modulo arithmetic on the index.
 The second one is to create an *infinite sequence*, which consists of
@@ -194,6 +201,7 @@ expansion in Cryptol:
 ``expandKey key = key # expandKey key``
 
 .. index:: recursion
+
 In that one line of code, there are a number of things to explain!
 First, it seems a bit magic (or cheating) that we're using ``expandKey``
 in the definition of ``expandKey``. This trick is a technique in
@@ -241,6 +249,7 @@ list goes on. So, we decide to test Cryptol's expansion by indexing our
 next one, 1001, which is the expected ``'E'``. So far, so good!
 
 .. index:: parallel comprehension
+
 The last Cryptol feature you'll need to learn in order to implement the
 Vigenère cipher is how to access two sequences at once in a sequence
 comprehension. We need this because we need to access both the next
@@ -272,6 +281,7 @@ because our expanded key has infinite length.
       -> zip along the elements (TODO: make this pretty)
 
 .. index:: lazy evaluation
+
 This also explains how Cryptol doesn't have to run forever when you ask
 it to define an infinitely expanded key: it only evaluates elements of a
 list as you ask for them. As long as you ask for only a finite number of
@@ -306,6 +316,7 @@ Exercises
    ``"qrucuvso dtoezje yzspd yordwt llsarvnij jzrwyam"``
 
 .. index: known plaintext attack
+
 3. One kind of attack against a code is when you know what some or all
    of a message is, and use that knowledge to learn something about the
    key. This was used during World War II when the Allied cryptanalysts

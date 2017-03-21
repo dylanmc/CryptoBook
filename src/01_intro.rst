@@ -47,6 +47,12 @@ the credit card you used to pay for your food? What about sharing your
 social media passwords? Needless to say, privacy and cryptography are
 both interesting, and are related to each other in subtle ways.
 
+Cryptography can be used for other purposes than keeping information
+secret, too. For example, *cryptographic signatures* can be used in
+place of a pen-and-ink signature to indicate you agree to something.
+Another application is *cryptographic hashes*, which can tell you,
+with high confidence, whether a document has been tampered with.
+
 Let's get started
 -----------------
 
@@ -115,6 +121,7 @@ Things to ponder
    a Caesar cipher? Explain your answer.
 
 .. index:: ! key distribution
+
 4. *Key distribution* is the challenge of getting the secret key to your
    friend. One way to distribute a key would be to include it in some
    hidden way in the message. Come up with a few ways you could do this

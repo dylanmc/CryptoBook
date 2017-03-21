@@ -245,7 +245,7 @@ hope.
        It's always safe to keep things positive like we're doing here.
 
 .. index::
-   single: Modulo arithmetic
+   single: modulo arithmetic
 
 However, looking up the rotor at ``G``, we get ``'D' - 'G'``
 which is -3.  How do we fix this? Well, it's always safe to add 0 to
