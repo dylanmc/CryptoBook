@@ -251,13 +251,20 @@ latex_elements = {
 \\setsansfont{Optima}
 \\setmonofont[Scale=0.8]{Menlo}''',
 
-    'geometry': '\\usepackage[vmargin=2.5cm, inner=2.5cm, outer=2.5cm]{geometry}',
+    'geometry': '\\usepackage[paperheight=8.5in, paperwidth=5.5in, vmargin=2.5cm, inner=2.5cm, outer=2.5cm]{geometry}',
     'printindex': '\\footnotesize\\raggedright\\printindex',
+
+     # Font can also be Times/Helvetica, or whatever you have & like.
+     # I got the idea for using Libertine from the SICP PDF, link
+     # here: https://github.com/sarabander/sicp-pdf
 
      # The paper size ('letterpaper' or 'a4paper').
      #
      # 'papersize': 'letterpaper',
-     'papersize': 'a5paper',
+     # 'papersize': 'a5paper',
+     # if you prefer a5paper (live in a sane part of the paper world),
+     # remove the paperwidth/height directives from geometry above,
+     # and select a5paper.
 
      # The font size ('10pt', '11pt' or '12pt').
      #

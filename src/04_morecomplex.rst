@@ -51,7 +51,7 @@ bar), and type something like this:
    $ mkdir CryptoBook
    $ cd CryptoBook
 
-Then, using whichever editor you choose, create a file called
+Then, using whichever text editor you choose, create a file called
 ``caesar.cry`` inside that directory. It should contain the following:
 
 .. code-block:: cryptol
@@ -60,12 +60,16 @@ Then, using whichever editor you choose, create a file called
     alphabet = ['a' .. 'z']
     toLower c = if c < 0x61 then c + 0x20 else c
     asciiToIndex c = (toLower c) - 'a'
+
     encryptChar wheel c = if c == ' '
         then c
         else wheel @ (asciiToIndex c)
+
     codeWheel key = reverse alphabet >>> key
+
     encrypt key message =
         [ encryptChar (codeWheel key) c | c <- message ]
+
     decrypt key message = encrypt key message
 
 The first line (``// Caesar cipher``) is a comment: it's text to remind
@@ -162,7 +166,7 @@ attacker will have to try. A simple approach to doing this is to have
 the key be a sequence of shift amounts. This is essentially the idea
 behind the Vigenère cipher. It was so successful at thwarting
 decryption, it was used for almost 300 years - from the 1500's through
-the 1800's, and was known for a lot of that time as "the indecipherable
+the 1800's, and was known for a lot of that time as "the unbreakable
 cipher".
 
 Here's how it works:
@@ -248,7 +252,9 @@ list goes on. So, we decide to test Cryptol's expansion by indexing our
 ``myXkey`` at index 1000, which happens to be an ``'H'``, and then the
 next one, 1001, which is the expected ``'E'``. So far, so good!
 
-.. index:: parallel comprehension
+.. index::
+   single: parallel comprehension
+   single: sequence comprehension
 
 The last Cryptol feature you'll need to learn in order to implement the
 Vigenère cipher is how to access two sequences at once in a sequence
@@ -329,7 +335,7 @@ Exercises
    ``"At the tone the time will be...".`` started with the following
    ciphertext: ``"gg njc fyjg doa joec jyfv xi"``.
 
-What we covered this chapter
+What we learned this chapter
 ----------------------------
 
 We started by learning how to program in Cryptol using files, and how to

@@ -1,6 +1,9 @@
 Introducing Cryptol
 ===================
 
+.. TODO
+   first "|" in a comprehension is pronounced "where"
+
 .. index:: algorithm, Cryptol
 
 Now that you understand how data can be represented in bits and have
@@ -47,11 +50,13 @@ run Cryptol, and follow along with the session below.
   Cryptol> 4 + 2
   Assuming a = 3
   0x6
-  Cryptol>
+  Cryptol> :q     // <- to quit Cryptol
+  %
 
 
 Here you've asked Cryptol to evaluate :math:`4 + 2`, and it responded
 with ``0x6``, which is a hexadecimal answer, but it's still just 6.
+Finally, we used ``:q`` to quit Cryptol.
 
 Types of data in Cryptol
 ------------------------
@@ -276,6 +281,34 @@ functions:
   Cryptol> quadruple 0x04
   16      <-  we still have output set to base 10
 
+
+Exercises: exploring Cryptol
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You'll probably have noticed that computers are very picky when you're
+programming.  If you get even one letter wrong in a function's name (a misspelling like
+``duoble``), Cryptol will complain. Computers are also very patient.
+You can try again. And again. One thing that's really handy is that
+you can press the up arrow (:math:`\uparrow`) key to recall earlier
+things you've typed, and you can use the left arrow, backspace and
+delete keys to fix things you've typed. Super-handy!
+
+ #) You've defined a function, *f*, which takes two arguments *x* and
+    *y*. Use this pattern to define a new function, *g*, and takes
+    three arguments (maybe add a *z*?) and adds them.
+
+ #) Experiment with ``:set base=10`` and ``:set base=16`` and run your
+    *f* and *g* functions on different arguments. Also experiment with
+    ``:set ascii=on`` and ``:set ascii=off`` and use sequence
+    comprehensions with ``x <- [ 0 .. 10 ]`` as well as
+    ``x <- [ 'a' .. 'Z']``.
+
+ #) Crytpol supports Really Big Numbers. For example, it's
+    estimated that the number of atoms in the Earth is about :math:`10^{50}`.
+    You can enter that number in Cryptol (specifying that it uses a
+    lot of bits) like this: ``10^^50:[200]``. How many Earth's worth
+    of atoms can you store in 200 bits?
+
 Functions on sequences
 ----------------------
 
@@ -464,14 +497,14 @@ Using what you've learned so far, let's implement the Caesar cipher in
 Cryptol. Let's start by breaking down the process of encrypting and
 decrypting data using the Caesar cipher.
 
-Let's guess what the function declaration should look like. We know that
+Let's figure out what the function declaration should look like. We know that
 the encrypt operation takes a key and a message, so the function
 declaration probably looks something like:
 
 ``caesarEncrypt key message =``
 
 Let's talk about how we can represent the key. In Chapter 1, we talked
-about the key being something like K\ :math:`\leftrightarrow`\ D, but
+about settings of the key being something like K\ :math:`\leftrightarrow`\ D, but
 that's hard to represent mathematically. If we straighten out our Caesar
 Cipher wheels into a line, it looks something like this:
 
@@ -518,19 +551,12 @@ character and returns its index in the alphabet:
 
   Cryptol> let asciiToIndex c = c - 'a'
 
-Using this function to encrypt one letter would look like this\ [#]_:
-
-.. [#] Some of the examples on this page have backslashes (\\) in them: it's
-    because they're on more than one line: if you type the \\, Cryptol
-    will let you continue typing on the next line. Alternatively you can
-    type it all on one line (and skip typing the \\).
+Using this function to encrypt one letter would look like this:
 
 .. code-block:: console
 
-  Cryptol> let encryptChar wheel c = \
-  wheel @ (asciiToIndex c)
-  Cryptol> let codeWheel key = \
-  reverse alphabet >>> key
+  Cryptol> let encryptChar wheel c = wheel @ (asciiToIndex c)
+  Cryptol> let codeWheel key = reverse alphabet >>> key
   Cryptol> encryptChar (codeWheel 4) 'h'
   'w'
 
@@ -543,7 +569,12 @@ with ``4`` as the key, and the second argument is our plaintext ``h``.
 The output is ``w`` as we hoped.
 
 Now we're ready to have Cryptol do this for every character in a string.
-Remember our sequence comprehensions? Here's how that comes together:
+Remember our sequence comprehensions? Here's how that comes together\ [#]_:
+
+.. [#] Some examples have backslashes (\\) in them: it's
+    because they're on more than one line: if you type the \\, Cryptol
+    will let you continue typing on the next line. Alternatively you can
+    type it all on one line (and skip typing the \\).
 
 .. code-block:: console
 
@@ -661,11 +692,20 @@ and just to make sure we didn't break already lower case input:
 As you can see, a conditional statement has three parts: the
 *condition*, the *if-expression* and the *else-expression*.
 
-Now we can use ``toLower`` to improve ``asciiToIndex``:
+Now we can use ``toLower`` to improve ``asciiToIndex``, then use our
+up-arrow trick to re-enter the definitions of ``encryptChar`` and
+``encrypt`` without having to retype them\ [#]_.
 
 .. code-block:: console
 
-  Cryptol> let asciiToIndex c = (toLower c) - 'a'
+  Cryptol> let asciiToIndex c = toLower c - 'a'
+  Cryptol> let encryptChar wheel c = wheel @ (asciiToIndex c)
+  Cryptol> let encrypt key message = \
+  [ encryptChar (codeWheel key) c | c <- message ]
+
+.. [#] For the functions you entered on multiple lines, you'll have to use
+   the up-arrow to fetch each line after you press Enter. It works! If you
+   somehow mess up, just try again: the computer won't mind.
 
 And now we can encrypt text with upper and lower case (but without
 spaces):
@@ -701,11 +741,14 @@ an uppercase letter, and then on a lowercase letter:
   Cryptol> encryptChar (codeWheel 7) 'i'
   'y'
 
-Yay, it looks like it'll work. Now let's encrypt and decrypt our
+Yay, it looks like it'll work. Now let's use up-arrow to re-define the
+``encrypt`` function that calls it, and encrypt and decrypt our
 original message:
 
 .. code-block:: console
 
+  Cryptol> let encrypt key message = \
+  [ encryptChar (codeWheel key) c | c <- message ]
   Cryptol> encrypt 7 "I LOVE PUZZLES"
   "y vslc rmhhvco"
   Cryptol> decrypt 7 "y vslc rmhhvco"
@@ -714,7 +757,7 @@ original message:
 Wow - it all worked! If it didn't, go through the error messages, and
 see if you can figure out what happened.
 
-What we covered this chapter
+What we learned this chapter
 ----------------------------
 
 We covered a lot of ground this chapter:

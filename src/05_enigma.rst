@@ -544,3 +544,14 @@ Pretty amazing! One limitation of this implementation is that it can
 only handle messages up to 100 characters long. That, and it's missing
 a few features from our paper Enigma. We'll take care of those in the
 next chapter.
+
+What we learned this chapter
+----------------------------
+
+You learned some history about the Enigma machine, you built a
+simplified one out of cardboard and paper, and used it to decome some
+encrypted messages. Next, you learned how to represent Enigma's
+*rotors* and *reflector* in Cryptol, and used different types to
+separate the notions of *index*, *offset*, and *character*. Finally,
+you wrote a Cryptol implementation of a one-rotor Enigma, and used it
+to decrypt and encrypt messages.
