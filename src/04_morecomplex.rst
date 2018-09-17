@@ -58,7 +58,7 @@ Then, using whichever text editor you choose, create a file called
 
     // Caesar cipher
     alphabet = ['a' .. 'z']
-    toLower c = if c < 0x61 then c + 0x20 else c
+    toLower c = if c < 'a' then c + 0x20 else c
     asciiToIndex c = (toLower c) - 'a'
 
     encryptChar wheel c = if c == ' '
@@ -148,6 +148,11 @@ message:
 ::
 
     "wlszknzlosgeyfzueyalknzqlsfmoaosqlhozzob"
+
+If you don't know how to start, think about using a sequence
+comprehension, where each element of the sequence is a decryption of
+the message using a different key. For the Caesar cipher, the keys to
+try would be ``[ 1 .. 25 ]``, right?
 
 Implementing our next cipher: Vigenère
 --------------------------------------

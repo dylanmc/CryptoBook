@@ -76,7 +76,7 @@ pen-and-paper version of the Enigma designed by Alan Turing while he
 was at Bletchley Park, and can be used to encrypt and decrypt messages
 interchangeably with real Enigma machines.
 
-.. [#] You can download it from http://wiki.franklinheath.co.uk/ index.php/Enigma/Paper_Enigma
+.. [#] You can download it from http://wiki.franklinheath.co.uk/index.php/ Enigma/Paper_Enigma
 
 The first thing you'll need to assemble your own paper Enigma is a
 tube that has a diameter of 75mm. One source of such tubes is
